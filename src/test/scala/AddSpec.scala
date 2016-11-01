@@ -1,5 +1,5 @@
 import org.scalatest.{FlatSpec, DiagrammedAssertions}
-import myscalc.calc.{Add, Int}
+import myscalc.calc._
 
 class AddSpec extends FlatSpec with DiagrammedAssertions {
 	"result" should "Intを2つ受け取り、足した数を返す" in {
