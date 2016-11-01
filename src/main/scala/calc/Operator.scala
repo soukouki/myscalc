@@ -1,7 +1,8 @@
 package myscalc.calc
 
 abstract sealed class Operator(left: Base, right: Base) extends Base {
-	override def isNum: Boolean = false
+	override def isNum = false
+	override def isContinue = true
 	/**
 		[[Add]][[Sub]][[Mul]][[Div]]のresultをまとめたメソッド
 		
