@@ -9,10 +9,14 @@ object Parse extends RegexParsers {
 		case failure : NoSuccess => scala.sys.error(failure.msg + "\ninput is \"" + input + "\"")
 	}
 	
-	def expr: Parser[Base] = chainl1(
-		number,
+	def expr: Parser[Base] = exprAddSub
+	def exprAddSub: Parser[Base] = chainl1(
+		exprMulDiv,
 		"+" ^^ {op => (l, r) => Add(l, r)} |
-		"-" ^^ {op => (l, r) => Sub(l, r)} |
+		"-" ^^ {op => (l, r) => Sub(l, r)}
+	)
+	def exprMulDiv: Parser[Base] = chainl1(
+		number,
 		"*" ^^ {op => (l, r) => Mul(l, r)} |
 		"/" ^^ {op => (l, r) => Div(l, r)}
 	)

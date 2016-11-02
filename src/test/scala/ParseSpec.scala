@@ -17,4 +17,15 @@ class ParseSpec extends FlatSpec with DiagrammedAssertions {
 		assert(Parse("1*1") === Mul(Int(1), Int(1)))
 		assert(Parse("1/1") === Div(Int(1), Int(1)))
 	}
+	it should "+-の連続を正しく処理できるか" in {
+		assert(Parse("1+2+3") === Add(Add(Int(1), Int(2)), Int(3)))
+		assert(Parse("1-2+3") === Add(Sub(Int(1), Int(2)), Int(3)))
+	}
+	it should "*/の連続を正しく処理できるか" in {
+		assert(Parse("1*2*3") === Mul(Mul(Int(1), Int(2)), Int(3)))
+		assert(Parse("1*2/3") === Div(Mul(Int(1), Int(2)), Int(3)))
+	}
+	it should "+-と*/の連続を正しく処理できるか" in {
+		assert(Parse("1+2*3") === Add(Int(1), Mul(Int(2), Int(3))))
+	}
 }
