@@ -28,4 +28,9 @@ class ParseSpec extends FlatSpec with DiagrammedAssertions {
 	it should "+-と*/の連続を正しく処理できるか" in {
 		assert(Parse("1+2*3") === Add(Int(1), Mul(Int(2), Int(3))))
 	}
+	it should "括弧を正しく処理できるか" in {
+		assert(Parse("(12)") === Int(12))
+		assert(Parse("(1+2)") === Add(Int(1), Int(2)))
+		assert(Parse("(1+2)*3") === Mul(Add(Int(1), Int(2)), Int(3)))
+	}
 }

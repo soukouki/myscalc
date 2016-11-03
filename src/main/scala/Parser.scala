@@ -16,9 +16,10 @@ object Parse extends RegexParsers {
 		"-" ^^ {op => (l, r) => Sub(l, r)}
 	)
 	def exprMulDiv: Parser[Base] = chainl1(
-		number,
+		number | parenthesis,
 		"*" ^^ {op => (l, r) => Mul(l, r)} |
 		"/" ^^ {op => (l, r) => Div(l, r)}
 	)
+	def parenthesis: Parser[Base] = "(" ~ expr ~ ")" ^^ {case "(" ~ exp ~ ")" => exp}
 	def number: Parser[Base] = """(\+|-)?\d+""".r ^^ {s => Int(s.toInt)}
 }
