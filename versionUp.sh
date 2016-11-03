@@ -1,5 +1,12 @@
 
-num="[0-9]*"
+# 変数の設定
 read newVersion
+directory="myscalc-$newVersion"
 
-sed -i "s/val myscalcVersion = \"$num.$num.$num\"/val myscalcVersion = \"$newVersion\"/" build.sbt
+sbt assembly
+
+# zipファイルの作成
+mkdir $directory
+cp $(ls target/scala-*/myscalc.jar) $directory
+zip -r "myscalc-$newVersion.zip" $directory
+rm -r $directory
