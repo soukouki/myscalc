@@ -5,4 +5,5 @@ case class Inf() extends Num {
 	override def - (pair: Num) = Inf()
 	override def * (pair: Num) = Inf()
 	override def / (pair: Num) = Inf()
+	override def string: String = "Inf"
 }

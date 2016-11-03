@@ -26,4 +26,5 @@ case class Int(value: ScalaInt) extends Num {
 			case _ => throw new RuntimeException(pair.getClass + "には対応していません")
 		}
 	}
+	override def string: String = value.toString
 }

@@ -26,16 +26,20 @@ abstract sealed class Operator(left: Base, right: Base) extends Base {
 
 case class Add(left: Base, right: Base) extends Operator(left, right) {
 	override def result: Base = resultBase(Add(_, _), _ + _)
+	override def string: String = left.string + "+" + right.string
 }
 
 case class Sub(left: Base, right: Base) extends Operator(left, right) {
 	override def result: Base = resultBase(Sub(_, _), _ - _)
+	override def string: String = left.string + "-" + right.string
 }
 
 case class Mul(left: Base, right: Base) extends Operator(left, right) {
 	override def result: Base = resultBase(Mul(_, _), _ * _)
+	override def string: String = left.string + "*" + right.string
 }
 
 case class Div(left: Base, right: Base) extends Operator(left, right) {
 	override def result: Base = resultBase(Div(_, _), _ / _)
+	override def string: String = left.string + "/" + right.string
 }
