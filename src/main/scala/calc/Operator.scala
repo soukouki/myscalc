@@ -1,8 +1,9 @@
 package myscalc.calc
 
-abstract sealed class Operator(left: Base, right: Base) extends Base {
-	override def isNum = false
+abstract sealed class Operator extends Base {
 	override def isContinue = true
+	def left: Base
+	def right: Base
 	/**
 		[[Add]][[Sub]][[Mul]][[Div]]のresultをまとめたメソッド
 		
@@ -13,33 +14,36 @@ abstract sealed class Operator(left: Base, right: Base) extends Base {
 			create: (Base, Base) => Operator,
 			solve: (Num, Num) => Num
 		): Base = {
-		(left.isNum, right.isNum) match {
-			case (false, false) | (false, true) // (1+2)+(3+4)
+		(left, right) match {
+			case (Operator(_, _), Operator(_, _)) | (Operator(_, _), Num()) // (1+2)+(3+4)
 				=> create(left.result, right)
-			case (true, false) // 1+2+3
+			case (Num(), Operator(_, _)) // 1+2+3
 				=> create(left, right.result)
-			case (true, true) // 1+2
-				=> solve(left.asInstanceOf[Num], right.asInstanceOf[Num])
+			case (l @ Num(), r @ Num()) // 1+2
+				=> solve(l, r)
 		}
 	}
 }
+object Operator {
+	def unapply(ope: Operator): Option[(Base, Base)] = Option((ope.left, ope.right))
+}
 
-case class Add(left: Base, right: Base) extends Operator(left, right) {
+case class Add(left: Base, right: Base) extends Operator {
 	override def result: Base = resultBase(Add(_, _), _ + _)
 	override def string: String = left.string + "+" + right.string
 }
 
-case class Sub(left: Base, right: Base) extends Operator(left, right) {
+case class Sub(left: Base, right: Base) extends Operator {
 	override def result: Base = resultBase(Sub(_, _), _ - _)
 	override def string: String = left.string + "-" + right.string
 }
 
-case class Mul(left: Base, right: Base) extends Operator(left, right) {
+case class Mul(left: Base, right: Base) extends Operator {
 	override def result: Base = resultBase(Mul(_, _), _ * _)
 	override def string: String = left.string + "*" + right.string
 }
 
-case class Div(left: Base, right: Base) extends Operator(left, right) {
+case class Div(left: Base, right: Base) extends Operator {
 	override def result: Base = resultBase(Div(_, _), _ / _)
 	override def string: String = left.string + "/" + right.string
 }
