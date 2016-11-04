@@ -1,6 +1,6 @@
 package myscalc.calc
 
-abstract sealed class Operator extends Base {
+sealed trait Operator extends Base {
 	override def isContinue = true
 	def left: Base
 	def right: Base
@@ -28,35 +28,48 @@ object Operator {
 	def unapply(ope: Operator): Option[(Base, Base)] = Option((ope.left, ope.right))
 }
 
-sealed trait AddSubOperator extends Operator
+/**
+[[Mul]][[Div]]よりも優先順位が低い演算子のtrait
+*/
+sealed trait AddSubOperator extends Operator {
+	protected def stringBase(symbol: Char): String = (left, right) match {
+		case (MulDivOperator(_, _), _) => s"(${left.string})${symbol}${right.string}"
+		case _ => left.string + symbol + right.string
+	}
+}
 object AddSubOperator {
 	def unapply(ope: AddSubOperator): Option[(Base, Base)] = Option((ope.left, ope.right))
 }
 
 case class Add(left: Base, right: Base) extends AddSubOperator {
 	override def result: Base = resultBase(Add(_, _), _ + _)
-	override def string: String = (left, right) match {
-		case (MulDivOperator(_, _), _) => s"(${left.string})+${right.string}"
-		case _ => left.string + "+" + right.string
-	}
+	override def string: String = stringBase('+')
 }
 
 case class Sub(left: Base, right: Base) extends AddSubOperator {
 	override def result: Base = resultBase(Sub(_, _), _ - _)
-	override def string: String = left.string + "-" + right.string
+	override def string: String = stringBase('-')
 }
 
-sealed trait MulDivOperator extends Operator
+/**
+[[Add]][[Sub]]よりも優先順位が高い演算子のtrait
+*/
+sealed trait MulDivOperator extends Operator {
+	protected def stringBase(symbol: Char): String = (left, right) match {
+		case (_, AddSubOperator(_, _)) => s"${left.string}${symbol}(${right.string})"
+		case _ => left.string + symbol + right.string
+	}
+}
 object MulDivOperator {
 	def unapply(ope: MulDivOperator): Option[(Base, Base)] = Option((ope.left, ope.right))
 }
 
 case class Mul(left: Base, right: Base) extends MulDivOperator {
 	override def result: Base = resultBase(Mul(_, _), _ * _)
-	override def string: String = left.string + "*" + right.string
+	override def string: String = stringBase('*')
 }
 
 case class Div(left: Base, right: Base) extends MulDivOperator {
 	override def result: Base = resultBase(Div(_, _), _ / _)
-	override def string: String = left.string + "/" + right.string
+	override def string: String = stringBase('/')
 }

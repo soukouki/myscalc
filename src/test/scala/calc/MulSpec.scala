@@ -12,11 +12,12 @@ class MulSpec extends FlatSpec with DiagrammedAssertions {
 	it should "式を受け取ると、先に計算する方だけを計算し、返す" in {
 		assert(Mul(Add(Int(2), Int(1)), Int(2)).result === Mul(Int(3), Int(2)))
 	}
-	"string" should "数字の間に*をつけて返す" in {
+	"string" should "式の間に*をつけて返す" in {
 		assert(Mul(Int(1), Int(2)).string === "1*2")
-	}
-	it should "左側が式の場合は、間に+をつける" in {
 		assert(Mul(Add(Int(1), Int(2)), Int(3)).string === "1+2*3")
 		assert(Mul(Mul(Int(1), Int(2)), Int(3)).string === "1*2*3")
+	}
+	it should "右側が+-の場合、括弧を付ける" in {
+		assert(Mul(Int(1), Add(Int(2), Int(3))).string === "1*(2+3)")
 	}
 }
