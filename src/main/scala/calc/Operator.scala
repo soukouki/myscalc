@@ -28,22 +28,35 @@ object Operator {
 	def unapply(ope: Operator): Option[(Base, Base)] = Option((ope.left, ope.right))
 }
 
-case class Add(left: Base, right: Base) extends Operator {
-	override def result: Base = resultBase(Add(_, _), _ + _)
-	override def string: String = left.string + "+" + right.string
+sealed trait AddSubOperator extends Operator
+object AddSubOperator {
+	def unapply(ope: AddSubOperator): Option[(Base, Base)] = Option((ope.left, ope.right))
 }
 
-case class Sub(left: Base, right: Base) extends Operator {
+case class Add(left: Base, right: Base) extends AddSubOperator {
+	override def result: Base = resultBase(Add(_, _), _ + _)
+	override def string: String = (left, right) match {
+		case (MulDivOperator(_, _), _) => s"(${left.string})+${right.string}"
+		case _ => left.string + "+" + right.string
+	}
+}
+
+case class Sub(left: Base, right: Base) extends AddSubOperator {
 	override def result: Base = resultBase(Sub(_, _), _ - _)
 	override def string: String = left.string + "-" + right.string
 }
 
-case class Mul(left: Base, right: Base) extends Operator {
+sealed trait MulDivOperator extends Operator
+object MulDivOperator {
+	def unapply(ope: MulDivOperator): Option[(Base, Base)] = Option((ope.left, ope.right))
+}
+
+case class Mul(left: Base, right: Base) extends MulDivOperator {
 	override def result: Base = resultBase(Mul(_, _), _ * _)
 	override def string: String = left.string + "*" + right.string
 }
 
-case class Div(left: Base, right: Base) extends Operator {
+case class Div(left: Base, right: Base) extends MulDivOperator {
 	override def result: Base = resultBase(Div(_, _), _ / _)
 	override def string: String = left.string + "/" + right.string
 }
