@@ -1,5 +1,6 @@
 import org.scalatest.{FlatSpec, DiagrammedAssertions}
-import myscalc.calc._
+import myscalc.calc.num._
+import myscalc.calc.operator._
 
 class MulSpec extends FlatSpec with DiagrammedAssertions {
 	"result" should "Mulを2つ受け取り、掛けた数を返す" in {

@@ -2,6 +2,8 @@ package myscalc
 
 import scala.util.parsing.combinator._
 import myscalc.calc._
+import myscalc.calc.num._
+import myscalc.calc.operator._
 
 object Parse extends RegexParsers {
 	def apply(input: String): Base = parseAll(expr, input) match {

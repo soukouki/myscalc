@@ -1,4 +1,5 @@
-package myscalc.calc
+package myscalc.calc.operator
+import myscalc.calc._
 
 sealed trait Operator extends Base {
 	override def isContinue = true

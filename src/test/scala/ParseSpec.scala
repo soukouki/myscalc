@@ -1,6 +1,7 @@
 import org.scalatest.{FlatSpec, DiagrammedAssertions}
 import myscalc.Parse
-import myscalc.calc._
+import myscalc.calc.num._
+import myscalc.calc.operator._
 
 class ParseSpec extends FlatSpec with DiagrammedAssertions {
 	"apply" should "数字の場合、Intが戻る" in {
