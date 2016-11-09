@@ -29,20 +29,29 @@ package num {
 			case Inf() => Inf()
 		}
 		override def / (pair: Num): Num = pair match {
-			case Int(n) => {
-				if(n == 0) {return Inf()}
-				Int(value / n)
+			case ipair @ Int(pairValue) => {
+				if(pairValue == 0) {return Inf()}
+				if(value % pairValue != 0) {return Rational(this, ipair)}
+				Int(value / pairValue)
 			}
 			case Inf() => Inf()
 		}
 		override def string: String = value.toString
 	}
 	
+	case class Rational(numerator: Int, denominator: Int) extends Num {
+		override def + (pair: Num): Num = ???
+		override def - (pair: Num): Num = ???
+		override def * (pair: Num): Num = ???
+		override def / (pair: Num): Num = ???
+		override def string: String = ???
+	}
+	
 	case class Inf() extends Num {
-		override def + (pair: Num) = Inf()
-		override def - (pair: Num) = Inf()
-		override def * (pair: Num) = Inf()
-		override def / (pair: Num) = Inf()
+		override def + (pair: Num): Num = Inf()
+		override def - (pair: Num): Num = Inf()
+		override def * (pair: Num): Num = Inf()
+		override def / (pair: Num): Num = Inf()
 		override def string: String = "Inf"
 	}
 }

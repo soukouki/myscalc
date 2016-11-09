@@ -13,6 +13,9 @@ class DivSpec extends FlatSpec with DiagrammedAssertions {
 	it should "式を受け取ると、先に計算する方だけを計算し、返す" in {
 		assert(Div(Add(Int(2), Int(1)), Add(Int(1), Int(2))).result === Div(Int(3), Add(Int(1), Int(2))))
 	}
+	it should "数同士で割り切れないときは有理数になる" in {
+		assert(Div(Int(2), Int(3)).result === Rational(Int(2), Int(3)))
+	}
 	"string" should "式の間に/をつけて返す" in {
 		assert(Div(Int(1), Int(2)).string === "1/2")
 		assert(Div(Add(Int(1), Int(2)), Int(3)).string === "1+2/3")
