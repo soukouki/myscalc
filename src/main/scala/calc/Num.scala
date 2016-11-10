@@ -2,7 +2,7 @@ package myscalc.calc
 
 import scala.{Int => ScalaInt}
 
-trait Num extends Base {
+sealed trait Num extends Base {
 	override def isContinue = false
 	override def result: Num = ???
 	def + (pair: Num): Num

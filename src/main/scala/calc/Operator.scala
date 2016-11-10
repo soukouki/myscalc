@@ -32,7 +32,7 @@ object Operator {
 /**
 [[Mul]][[Div]]よりも優先順位が低い演算子のtrait
 */
-private[operator] trait AddSubOperator extends Operator {
+private[operator] sealed trait AddSubOperator extends Operator {
 	protected def stringBase(symbol: Char): String = (left, right) match {
 		case (MulDivOperator(_, _), _) => s"(${left.string})${symbol}${right.string}"
 		case _ => left.string + symbol + right.string
@@ -55,7 +55,7 @@ case class Sub(left: Base, right: Base) extends AddSubOperator {
 /**
 [[Add]][[Sub]]よりも優先順位が高い演算子のtrait
 */
-private[operator] trait MulDivOperator extends Operator {
+private[operator] sealed trait MulDivOperator extends Operator {
 	protected def stringBase(symbol: Char): String = (left, right) match {
 		case (_, AddSubOperator(_, _)) => s"${left.string}${symbol}(${right.string})"
 		case _ => left.string + symbol + right.string
