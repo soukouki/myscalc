@@ -1,6 +1,7 @@
 package myscalc.calc
 
 import scala.{Int => ScalaInt}
+import myscalc.calc.operatorbase.MulDivOperator
 
 sealed trait Num extends Base {
 	override def isContinue = false
@@ -39,12 +40,12 @@ package num {
 		override def string: String = value.toString
 	}
 	
-	case class Rational(numerator: Int, denominator: Int) extends Num {
+	case class Rational(numerator: Int, denominator: Int) extends Num with MulDivOperator {
 		override def + (pair: Num): Num = ???
 		override def - (pair: Num): Num = ???
 		override def * (pair: Num): Num = ???
 		override def / (pair: Num): Num = ???
-		override def string: String = ???
+		override def string: String = s"${numerator.string}/${denominator.string}"
 	}
 	
 	case class Inf() extends Num {
