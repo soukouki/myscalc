@@ -16,11 +16,11 @@ sealed trait Operator extends Base {
 			solve: (Num, Num) => Num
 		): Base = {
 		(left, right) match {
-			case (Operator(_, _), Operator(_, _)) | (Operator(_, _), Num()) // (1+2)+(3+4)
+			case (_: Operator, _: Operator) | (_: Operator, _: Num) // (1+2)+(3+4)
 				=> create(left.result, right)
-			case (Num(), Operator(_, _)) // 1+2+3
+			case (_: Num, _: Operator) // 1+2+3
 				=> create(left, right.result)
-			case (l @ Num(), r @ Num()) // 1+2
+			case (l: Num, r: Num) // 1+2
 				=> solve(l, r)
 		}
 	}
@@ -34,7 +34,7 @@ object Operator {
 */
 private[operator] sealed trait AddSubOperator extends Operator {
 	protected def stringBase(symbol: Char): String = (left, right) match {
-		case (_, AddSubOperator(_, _)) => s"${left.string}$symbol(${right.string})"
+		case (_, _: AddSubOperator) => s"${left.string}$symbol(${right.string})"
 		case _ => s"${left.string}$symbol${right.string}"
 	}
 }
@@ -57,11 +57,11 @@ case class Sub(left: Base, right: Base) extends AddSubOperator {
 */
 private[operator] sealed trait MulDivOperator extends Operator {
 	protected def stringBase(symbol: Char): String = right match {
-		case MulDivOperator(_, _) => s"${putParentheses(left)}$symbol(${right.string})"
+		case _: MulDivOperator => s"${putParentheses(left)}$symbol(${right.string})"
 		case _ => s"${putParentheses(left)}$symbol${putParentheses(right)}"
 	}
 	private def putParentheses(b: Base): String = b match {
-		case AddSubOperator(_, _) => s"(${b.string})"
+		case _: AddSubOperator => s"(${b.string})"
 		case _ => b.string
 	}
 }

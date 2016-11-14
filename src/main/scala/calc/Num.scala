@@ -18,15 +18,15 @@ package num {
 	case class Int(value: ScalaInt) extends Num {
 		override def + (pair: Num): Num = pair match {
 			case Int(n) => Int(value + n)
-			case Inf() => Inf()
+			case _: Inf => Inf()
 		}
 		override def - (pair: Num): Num = pair match {
 			case Int(n) => Int(value - n)
-			case Inf() => Inf()
+			case _: Inf => Inf()
 		}
 		override def * (pair: Num): Num = pair match {
 			case Int(n) => Int(value * n)
-			case Inf() => Inf()
+			case _: Inf => Inf()
 		}
 		override def / (pair: Num): Num = pair match {
 			case ipair @ Int(pairValue) => {
@@ -34,7 +34,7 @@ package num {
 				if(value % pairValue != 0) {return Rational(this, ipair)}
 				Int(value / pairValue)
 			}
-			case Inf() => Inf()
+			case _: Inf => Inf()
 		}
 		override def string: String = value.toString
 	}
