@@ -6,12 +6,10 @@ object Calc {
 	def main(args: Array[String]) = {
 		val in = readLine()
 		val tree = Parse(in)
-		println(tree.string)
-		calc(tree)
+		calc(tree, "")
 	}
-	def calc(tree: Base): Unit = {
-		val newTree = tree.result
-		println(newTree.string)
-		if(newTree.isContinue) {calc(newTree)}
+	def calc(tree: Base, old: String): Unit = {
+		if(tree.string != old) println(tree.string)
+		if(tree.isContinue) calc(tree.result, tree.string)
 	}
 }
