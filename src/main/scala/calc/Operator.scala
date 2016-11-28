@@ -14,7 +14,7 @@ sealed trait Operator extends Base {
 	*/
 	protected def resultBase(
 			create: (Base, Base) => Operator,
-			solve: (Num, Num) => Num
+			solve: (Num, Num) => Base
 		): Base = {
 		(left, right) match {
 			case (_: Operator, _: Operator) | (_: Operator, _: Num) // (1+2)+(3+4)
