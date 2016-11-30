@@ -5,11 +5,26 @@ import myscalc.calc.operator._
 class RationalSpec extends FlatSpec with DiagrammedAssertions {
 	"result" should "約分できるか" in {
 		assert(Rational(Int(4), Int(6)).result === Rational(Int(2), Int(3)))
-		assert(Rational(Int(100), Int(3)).result === Rational(Int(100), Int(3)))
+	}
+	it should "マイナスの扱い" in {
+		assert(Rational(Int(1), Int(-2)).result === Rational(Int(-1), Int(2)))
+		assert(Rational(Int(-1), Int(-2)).result === Rational(Int(1), Int(2)))
 	}
 	"isContinue" should "約分ができるときはtrue" in {
 		assert(Rational(Int(2), Int(3)).isContinue === false)
 		assert(Rational(Int(4), Int(6)).isContinue === true)
+	}
+	it should "マイナスの扱い" in {
+		assert(Rational(Int(1), Int(2)).isContinue === false)
+		assert(Rational(Int(-1), Int(2)).isContinue === false)
+		assert(Rational(Int(1), Int(-2)).isContinue === true)
+		assert(Rational(Int(-1), Int(-2)).isContinue === true)
+	}
+	"string" should "Divと同じように" in {
+		assert(Rational(Int(1), Int(2)).string === "1/2")
+	}
+	it should "他のOperatorからも正しくできるか" in {
+		assert(Div(Int(1), Rational(Int(2), Int(3))).string === "1/(2/3)")
 	}
 	"+" should "整数" in {
 		// 1/2+3=(1+2*3)/2=(1+6)/2=7/2
@@ -69,10 +84,4 @@ class RationalSpec extends FlatSpec with DiagrammedAssertions {
 			Div(Mul(Int(1), Int(4)), Mul(Int(2), Int(3))))
 	}
 	"+-*/" should "Infを渡されたら" // case不足で警告が出るので省略
-	"string" should "Divと同じように" in {
-		assert(Rational(Int(1), Int(2)).string === "1/2")
-	}
-	it should "他のOperatorからも正しくできるか" in {
-		assert(Div(Int(1), Rational(Int(2), Int(3))).string === "1/(2/3)")
-	}
 }

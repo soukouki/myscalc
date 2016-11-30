@@ -56,10 +56,12 @@ package num {
 				if(b==0) return a
 				gcdi(b, a % b)
 			}
-			Int(gcdi(value, pair.value))
+			Int(gcdi(value, pair.value).abs)
 		}
 		/**[[Rational]]の方で、公約数で割る処理のため*/
 		private[num] def intdiv(pair: Int): Int = Int(value / pair.value)
+		private[num] def isMinus: Boolean = value < 0
+		private[num] def uminus: Int = Int(0 - value)
 	}
 	
 	case class Inf() extends SimpleNum {
@@ -72,12 +74,15 @@ package num {
 	
 	case class Rational(numerator: Int, denominator: Int) extends Num with MulDivOperator {
 		override def isContinue: Boolean = {
-			val gcd = numerator gcd denominator
-			gcd != Int(1)
+			canReduce | denominator.isMinus
 		}
 		override def result: Rational = {
-			val gcd = numerator gcd denominator
-			Rational(numerator.intdiv(gcd), denominator.intdiv(gcd))
+			if(canReduce) {
+				val gcd = numerator gcd denominator
+				Rational(numerator.intdiv(gcd), denominator.intdiv(gcd))
+			} else if (denominator.isMinus) {
+				Rational(numerator.uminus, denominator.uminus)
+			} else throw new RuntimeException("isContinueがfalseなのでresultは実行されてはいけない")
 		}
 		override def + (pair: Num): Base = pair match {
 			case _: Int => Div(Add(numerator, Mul(denominator, pair)), denominator)
@@ -102,5 +107,6 @@ package num {
 			case _: Inf => Inf()
 		}
 		override def string: String = s"${numerator.string}/${denominator.string}"
+		private def canReduce: Boolean = (numerator gcd denominator) != Int(1)
 	}
 }
