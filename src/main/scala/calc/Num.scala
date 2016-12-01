@@ -53,10 +53,17 @@ package num {
 		*/
 		private[num] def gcd(pair: Int): Int = {
 			def gcdi(a: ScalaInt, b: ScalaInt): ScalaInt = {
-				if(b==0) return a
-				gcdi(b, a % b)
+				if(b==0) a
+				else gcdi(b, a % b)
 			}
 			Int(gcdi(value, pair.value).abs)
+		}
+		private[num] def minimumCommonDivisorExcept1(pair: Int): Int = {
+			def mcde1(i: ScalaInt, a: ScalaInt, b: ScalaInt): ScalaInt = {
+				if(a % i == 0 && b % i == 0) i
+				else mcde1(i + 1, a, b)
+			}
+			Int(mcde1(2, value, pair.value))
 		}
 		/**[[Rational]]の方で、公約数で割る処理のため*/
 		private[num] def intdiv(pair: Int): Int = Int(value / pair.value)
@@ -78,8 +85,8 @@ package num {
 		}
 		override def result: Rational = {
 			if(canReduce) {
-				val gcd = numerator gcd denominator
-				Rational(numerator.intdiv(gcd), denominator.intdiv(gcd))
+				val mcde1, minimumCommonDivisorExcept1 = numerator minimumCommonDivisorExcept1 denominator
+				Rational(numerator.intdiv(mcde1), denominator.intdiv(mcde1))
 			} else if (denominator.isMinus) {
 				Rational(numerator.uminus, denominator.uminus)
 			} else throw new RuntimeException("isContinueがfalseなのでresultは実行されてはいけない")

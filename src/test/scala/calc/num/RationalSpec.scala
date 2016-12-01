@@ -5,6 +5,12 @@ import myscalc.calc.operator._
 class RationalSpec extends FlatSpec with DiagrammedAssertions {
 	"result" should "約分できるか" in {
 		assert(Rational(Int(4), Int(6)).result === Rational(Int(2), Int(3)))
+		assert(Rational(Int(-2), Int(-4)).result === Rational(Int(-1), Int(-2)))
+	}
+	it should "約分は2以上の最小公約数ずつ" in {
+		assert(Rational(Int(18), Int(24)).result === Rational(Int(9), Int(12)))
+		assert(Rational(Int(9), Int(12)).result === Rational(Int(3), Int(4)))
+		assert(Rational(Int(-4), Int(4)).result === Rational(Int(-2), Int(2)))
 	}
 	it should "マイナスの扱い" in {
 		assert(Rational(Int(1), Int(-2)).result === Rational(Int(-1), Int(2)))
