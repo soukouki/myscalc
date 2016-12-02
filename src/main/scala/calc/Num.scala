@@ -84,12 +84,12 @@ package num {
 			canReduce | denominator.isMinus
 		}
 		override def result: Rational = {
-			if(canReduce) {
+			if (denominator.isMinus) {
+				Rational(numerator.uminus, denominator.uminus)
+			} else if(canReduce) {
 				val mcde1, minimumCommonDivisorExcept1 = numerator minimumCommonDivisorExcept1 denominator
 				Rational(numerator.intdiv(mcde1), denominator.intdiv(mcde1))
-			} else if (denominator.isMinus) {
-				Rational(numerator.uminus, denominator.uminus)
-			} else throw new RuntimeException("isContinueがfalseなのでresultは実行されてはいけない")
+			} else throw new RuntimeException("resultを呼ぶ条件が揃っていないはず")
 		}
 		override def + (pair: Num): Base = pair match {
 			case _: Int => Div(Add(numerator, Mul(denominator, pair)), denominator)
