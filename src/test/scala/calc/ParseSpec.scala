@@ -8,6 +8,12 @@ class ParseSpec extends FlatSpec with DiagrammedAssertions {
 		assert(Parse("3") === Int(3))
 		assert(Parse("12") === Int(12))
 	}
+	it should "大きな数をパースできるか" in {
+		// 2147483647は32bitの符号付き整数の最大
+		assert(Parse("2147483648") === Int(BigInt("80000000", 16)))
+		// 9223372036854775807は64bitの符号付き整数の最大
+		assert(Parse("9223372036854775808") === Int(BigInt("8000000000000000", 16)))
+	}
 	it should "数字の先頭が+と-の場合、その値で戻る" in {
 		assert(Parse("+3") === Int(3))
 		assert(Parse("-3") === Int(-3))

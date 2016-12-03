@@ -1,6 +1,6 @@
 package myscalc.calc
 
-import scala.{Int => ScalaInt}
+import scala.math.{BigInt => ScalaInt}
 import myscalc.calc.operatorbase.MulDivOperator
 import myscalc.calc.operator._
 
