@@ -1,4 +1,5 @@
 package myscalc.calc.operator
+
 import myscalc.calc._
 import myscalc.calc.operatorbase._
 

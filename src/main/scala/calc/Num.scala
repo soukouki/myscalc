@@ -1,6 +1,5 @@
 package myscalc.calc
 
-import scala.math.{BigInt => ScalaInt}
 import myscalc.calc.operatorbase.MulDivOperator
 import myscalc.calc.operator._
 
@@ -18,10 +17,10 @@ package num {
 	/**resultできない[[Num]]*/
 	sealed trait SimpleNum extends Num {
 		override def isContinue = false
-		override def result: Num = throw new RuntimeException("isContinueがfalseなのでresultは実行されてはいけない")
+		override def result: Num = sys.error("isContinueがfalseなのでresultは実行されてはいけない")
 	}
 	
-	case class Int(value: ScalaInt) extends SimpleNum {
+	case class Int(value: BigInt) extends SimpleNum {
 		override def + (pair: Num): Base = pair match {
 			case Int(n) => Int(value + n)
 			case _: Inf => Inf()
@@ -52,14 +51,14 @@ package num {
 			{{{a gcd b}}}
 		*/
 		private[num] def gcd(pair: Int): Int = {
-			def gcdi(a: ScalaInt, b: ScalaInt): ScalaInt = {
+			def gcdi(a: BigInt, b: BigInt): BigInt = {
 				if(b==0) a
 				else gcdi(b, a % b)
 			}
 			Int(gcdi(value, pair.value).abs)
 		}
 		private[num] def minimumCommonDivisorExcept1(pair: Int): Int = {
-			def mcde1(i: ScalaInt, a: ScalaInt, b: ScalaInt): ScalaInt = {
+			def mcde1(i: BigInt, a: BigInt, b: BigInt): BigInt = {
 				if(a % i == 0 && b % i == 0) i
 				else mcde1(i + 1, a, b)
 			}
@@ -89,7 +88,7 @@ package num {
 			} else if(canReduce) {
 				val mcde1, minimumCommonDivisorExcept1 = numerator minimumCommonDivisorExcept1 denominator
 				Rational(numerator.intdiv(mcde1), denominator.intdiv(mcde1))
-			} else throw new RuntimeException("resultを呼ぶ条件が揃っていないはず")
+			} else sys.error("isContinueがfalseなのでresultは実行されてはいけない")
 		}
 		override def + (pair: Num): Base = pair match {
 			case _: Int => Div(Add(numerator, Mul(denominator, pair)), denominator)

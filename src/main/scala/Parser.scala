@@ -8,7 +8,7 @@ import myscalc.calc.operator._
 object Parse extends RegexParsers {
 	def apply(input: String): Base = parseAll(expr, input) match {
 		case Success(result, _) => result
-		case failure : NoSuccess => scala.sys.error(failure.msg + "\ninput is \"" + input + "\"")
+		case failure : NoSuccess => sys.error(failure.msg + "\ninput is \"" + input + "\"")
 	}
 	
 	def expr: Parser[Base] = exprAddSub

@@ -1,5 +1,6 @@
 package myscalc
 
+import scala.io.StdIn._
 import myscalc.calc.Base
 
 object Calc {
