@@ -118,7 +118,7 @@ package num {
 			case Rational(pn, pd) => Div(Mul(numerator, pd), Mul(denominator, pn))
 			case _: Inf => Inf()
 		}
-		override def string: String = s"${numerator.string}/${denominator.string}"
+		override def string: String = stringBase(numerator, "/", denominator)
 		private def canReduce: Boolean = (numerator gcd denominator) != Int(1)
 	}
 }
