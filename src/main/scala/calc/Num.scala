@@ -36,12 +36,11 @@ package num {
 			case _: Inf => Inf()
 			case _: Rational => pair * this
 		}
+		/**
+			両方がInt型のときの処理は[[Rational]]でやる
+		*/
 		override def / (pair: Num): Base = pair match {
-			case ipair @ Int(pairValue) => {
-				if(pairValue == 0) {return Inf()}
-				if(value % pairValue != 0) {return Rational(this, ipair)}
-				Int(value / pairValue)
-			}
+			case i: Int => Rational(this, i)
 			case _: Inf => Inf()
 			case Rational(pn, pd) => Div(Mul(this, pd), pn)
 		}
@@ -78,12 +77,19 @@ package num {
 		override def string: String = "Inf"
 	}
 	
+	/**
+		[[Int#/]]と違い、両方の数がInt型のときの処理をする
+	*/
 	case class Rational(numerator: Int, denominator: Int) extends Num with MulDivOperator {
 		override def isContinue: Boolean = {
-			canReduce | denominator.isMinus
+			denominator == Int(1) | denominator == Int(0) | denominator.isMinus | canReduce
 		}
-		override def result: Rational = {
-			if (denominator.isMinus) {
+		override def result: Num = {
+			if(denominator == Int(1)) {
+				numerator
+			} else if(denominator == Int(0)) {
+				Inf()
+			} else if (denominator.isMinus) {
 				Rational(numerator.uminus, denominator.uminus)
 			} else if(canReduce) {
 				val mcde1, minimumCommonDivisorExcept1 = numerator minimumCommonDivisorExcept1 denominator
