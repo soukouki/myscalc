@@ -6,9 +6,9 @@ import myscalc.calc.num._
 import myscalc.calc.operator._
 
 object Parse extends RegexParsers {
-	def apply(input: String): Base = parseAll(expr, input) match {
-		case Success(result, _) => result
-		case failure : NoSuccess => sys.error(failure.msg + "\ninput is \"" + input + "\"")
+	def apply(input: String): Either[String, Base] = parseAll(expr, input) match {
+		case Success(result, _) => Right(result)
+		case failure : NoSuccess => Left(failure.msg)
 	}
 	
 	def expr: Parser[Base] = exprAddSub

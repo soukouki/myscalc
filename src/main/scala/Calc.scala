@@ -6,8 +6,10 @@ import myscalc.calc.Base
 object Calc {
 	def main(args: Array[String]) = {
 		val in = readLine()
-		val tree = Parse(in)
-		calc(tree, "")
+		Parse(in) match {
+			case Left(msg) => println("parse error:" + msg)
+			case Right(tree) => calc(tree, "")
+		}
 	}
 	def calc(tree: Base, old: String): Unit = {
 		if(tree.string != old) println(tree.string)

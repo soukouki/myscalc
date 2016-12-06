@@ -21,16 +21,8 @@ package num {
 	}
 	
 	case class Int(value: BigInt) extends SimpleNum {
-		override def + (pair: Num): Base = pair match {
-			case Int(n) => Int(value + n)
-			case _: Inf => Inf()
-			case _: Rational => pair + this
-		}
-		override def - (pair: Num): Base = pair match {
-			case Int(n) => Int(value - n)
-			case _: Inf => Inf()
-			case Rational(pn, pd) => Div(Sub(pn, Mul(pd, this)), pd)
-		}
+		override def + (pair: Num): Base = addSubBase(pair, _ + _, Add(_, _))
+		override def - (pair: Num): Base = addSubBase(pair, _ - _, Sub(_, _))
 		override def * (pair: Num): Base = pair match {
 			case Int(n) => Int(value * n)
 			case _: Inf => Inf()
@@ -45,17 +37,7 @@ package num {
 			case Rational(pn, pd) => Div(Mul(this, pd), pn)
 		}
 		override def string: String = value.toString
-		/**
-			最大公約数
-			{{{a gcd b}}}
-		*/
-		private[num] def gcd(pair: Int): Int = {
-			def gcdi(a: BigInt, b: BigInt): BigInt = {
-				if(b==0) a
-				else gcdi(b, a % b)
-			}
-			Int(gcdi(value, pair.value).abs)
-		}
+		private[num] def gcd(pair: Int): Int = Int(value gcd pair.value)
 		private[num] def minimumCommonDivisorExcept1(pair: Int): Int = {
 			def mcde1(i: BigInt, a: BigInt, b: BigInt): BigInt = {
 				if(a % i == 0 && b % i == 0) i
@@ -67,6 +49,14 @@ package num {
 		private[num] def intdiv(pair: Int): Int = Int(value / pair.value)
 		private[num] def isMinus: Boolean = value < 0
 		private[num] def uminus: Int = Int(0 - value)
+		
+		private def addSubBase(pair: Num, intResult: (BigInt, BigInt) => BigInt, create: (Base, Base) => Base): Base = {
+			pair match {
+				case Int(n) => Int(intResult(value, n))
+				case _: Inf => Inf()
+				case Rational(pn, pd) => Div(create(pn, Mul(pd, this)), pd)
+			}
+		}
 	}
 	
 	case class Inf() extends SimpleNum {
@@ -96,18 +86,8 @@ package num {
 				Rational(numerator.intdiv(mcde1), denominator.intdiv(mcde1))
 			} else sys.error("isContinueがfalseなのでresultは実行されてはいけない")
 		}
-		override def + (pair: Num): Base = pair match {
-			case _: Int => Div(Add(numerator, Mul(denominator, pair)), denominator)
-			case Rational(pn, `denominator`) => Div(Add(numerator, pn), denominator)
-			case Rational(pn, pd) => Div(Add(Mul(numerator, pd), Mul(pn, denominator)), Mul(denominator, pd))
-			case _: Inf => Inf()
-		}
-		override def - (pair: Num): Base = pair match {
-			case _: Int => Div(Sub(numerator, Mul(denominator, pair)), denominator)
-			case Rational(pn, `denominator`) => Div(Sub(numerator, pn), denominator)
-			case Rational(pn, pd) => Div(Sub(Mul(numerator, pd), Mul(pn, denominator)), Mul(denominator, pd))
-			case _: Inf => Inf()
-		}
+		override def + (pair: Num): Base = addSubBase(pair, Add(_, _))
+		override def - (pair: Num): Base = addSubBase(pair, Sub(_, _))
 		override def * (pair: Num): Base = pair match {
 			case _: Int => Div(Mul(numerator, pair), denominator)
 			case Rational(pn, pd) => Div(Mul(numerator, pn), Mul(denominator, pd))
@@ -119,6 +99,13 @@ package num {
 			case _: Inf => Inf()
 		}
 		override def string: String = stringBase(numerator, "/", denominator)
+		
 		private def canReduce: Boolean = (numerator gcd denominator) != Int(1)
+		private def addSubBase(pair: Num, create: (Base, Base) => Base): Base = pair match {
+			case _: Int => Div(create(numerator, Mul(denominator, pair)), denominator)
+			case Rational(pn, `denominator`) => Div(create(numerator, pn), denominator)
+			case Rational(pn, pd) => Div(create(Mul(numerator, pd), Mul(pn, denominator)), Mul(denominator, pd))
+			case _: Inf => Inf()
+		}
 	}
 }
