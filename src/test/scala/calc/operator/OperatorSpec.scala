@@ -9,11 +9,11 @@ class AddSubOperatorSpec extends FlatSpec with DiagrammedAssertions {
 }
 
 class AddSpec extends FlatSpec with DiagrammedAssertions {
-	"result" should "Intを2つ受け取り、足した数を返す" in {
-		assert(Add(Int(1), Int(2)).result === Int(3))
+	"advance" should "Intを2つ受け取り、足した数を返す" in {
+		assert(Add(Int(1), Int(2)).advance === Int(3))
 	}
 	it should "式を受け取ると、先に計算する方だけを計算し、返す" in {
-		assert(Add(Add(Int(1), Int(2)), Int(3)).result === Add(Int(3), Int(3)))
+		assert(Add(Add(Int(1), Int(2)), Int(3)).advance === Add(Int(3), Int(3)))
 	}
 	"string" should "式の間に+をつけて返す" in {
 		assert(Add(Int(1), Int(2)).string === "1+2")
@@ -23,12 +23,12 @@ class AddSpec extends FlatSpec with DiagrammedAssertions {
 }
 
 class SubSpec extends FlatSpec with DiagrammedAssertions {
-	"result" should "Intを2つ受け取り、引いた値を返す" in {
-		assert(Sub(Int(2), Int(1)).result === Int(1))
-		assert(Sub(Int(1), Int(2)).result === Int(-1))
+	"advance" should "Intを2つ受け取り、引いた値を返す" in {
+		assert(Sub(Int(2), Int(1)).advance === Int(1))
+		assert(Sub(Int(1), Int(2)).advance === Int(-1))
 	}
 	it should "式を受け取ると、先に計算する方だけを計算し、返す" in {
-		assert(Sub(Sub(Int(2), Int(1)), Int(1)).result === Sub(Int(1), Int(1)))
+		assert(Sub(Sub(Int(2), Int(1)), Int(1)).advance === Sub(Int(1), Int(1)))
 	}
 	"string" should "式の間に-をつけて返す" in {
 		assert(Sub(Int(1), Int(2)).string === "1-2")
@@ -50,15 +50,15 @@ class MulDivOperatorSpec extends FlatSpec with DiagrammedAssertions {
 }
 
 class MulSpec extends FlatSpec with DiagrammedAssertions {
-	"result" should "Mulを2つ受け取り、掛けた数を返す" in {
-		assert(Mul(Int(2), Int(2)).result === Int(4))
-		assert(Mul(Int(-2), Int(2)).result === Int(-4))
-		assert(Mul(Int(2), Int(-2)).result === Int(-4))
-		assert(Mul(Int(-2), Int(-2)).result === Int(4))
-		assert(Mul(Int(2), Int(0)).result === Int(0))
+	"advance" should "Mulを2つ受け取り、掛けた数を返す" in {
+		assert(Mul(Int(2), Int(2)).advance === Int(4))
+		assert(Mul(Int(-2), Int(2)).advance === Int(-4))
+		assert(Mul(Int(2), Int(-2)).advance === Int(-4))
+		assert(Mul(Int(-2), Int(-2)).advance === Int(4))
+		assert(Mul(Int(2), Int(0)).advance === Int(0))
 	}
 	it should "式を受け取ると、先に計算する方だけを計算し、返す" in {
-		assert(Mul(Add(Int(2), Int(1)), Int(2)).result === Mul(Int(3), Int(2)))
+		assert(Mul(Add(Int(2), Int(1)), Int(2)).advance === Mul(Int(3), Int(2)))
 	}
 	"string" should "式の間に*をつけて返す" in {
 		assert(Mul(Int(1), Int(2)).string === "1*2")
@@ -67,16 +67,16 @@ class MulSpec extends FlatSpec with DiagrammedAssertions {
 }
 
 class DivSpec extends FlatSpec with DiagrammedAssertions {
-	"result" should "Intを2つ受け取り、分数にして返す" in {
-		assert(Div(Int(4), Int(2)).result === Rational(Int(4), Int(2)))
-		assert(Div(Int(3), Int(10)).result === Rational(Int(3), Int(10)))
+	"advance" should "Intを2つ受け取り、分数にして返す" in {
+		assert(Div(Int(4), Int(2)).advance === Rational(Int(4), Int(2)))
+		assert(Div(Int(3), Int(10)).advance === Rational(Int(3), Int(10)))
 	}
 	it should "0で割った場合、Infを返す" in {
-		assert(Div(Int(2), Int(0)).result.result === Inf())
-		assert(Div(Int(0), Int(0)).result.result === Inf())
+		assert(Div(Int(2), Int(0)).advance.advance === Inf())
+		assert(Div(Int(0), Int(0)).advance.advance === Inf())
 	}
 	it should "式を受け取ると、先に計算する方だけを計算し、返す" in {
-		assert(Div(Add(Int(2), Int(1)), Add(Int(1), Int(2))).result === Div(Int(3), Add(Int(1), Int(2))))
+		assert(Div(Add(Int(2), Int(1)), Add(Int(1), Int(2))).advance === Div(Int(3), Add(Int(1), Int(2))))
 	}
 	"string" should "式の間に/をつけて返す" in {
 		assert(Div(Int(1), Int(2)).string === "1/2")

@@ -14,10 +14,10 @@ object Num {
 }
 
 package num {
-	/**resultできない[[Num]]*/
+	/**[[#advance]]できない[[Num]]*/
 	sealed trait SimpleNum extends Num {
-		override def isContinue = false
-		override def result: Num = sys.error("isContinueがfalseなのでresultは実行されてはいけない")
+		override def hasFinished = false
+		override def advance: Num = sys.error("hasFinishedがfalseなのでadvanceは実行されてはいけない")
 	}
 	
 	case class Int(value: BigInt) extends SimpleNum {
@@ -50,9 +50,9 @@ package num {
 		private[num] def isMinus: Boolean = value < 0
 		private[num] def uminus: Int = Int(0 - value)
 		
-		private def addSubBase(pair: Num, intResult: (BigInt, BigInt) => BigInt, create: (Base, Base) => Base): Base = {
+		private def addSubBase(pair: Num, intadvance: (BigInt, BigInt) => BigInt, create: (Base, Base) => Base): Base = {
 			pair match {
-				case Int(n) => Int(intResult(value, n))
+				case Int(n) => Int(intadvance(value, n))
 				case _: Inf => Inf()
 				case Rational(pn, pd) => Div(create(pn, Mul(pd, this)), pd)
 			}
@@ -71,10 +71,10 @@ package num {
 		[[Int#/]]と違い、両方の数がInt型のときの処理をする
 	*/
 	case class Rational(numerator: Int, denominator: Int) extends Num with MulDivOperator {
-		override def isContinue: Boolean = {
+		override def hasFinished: Boolean = {
 			denominator == Int(1) | denominator == Int(0) | denominator.isMinus | canReduce
 		}
-		override def result: Num = {
+		override def advance: Num = {
 			if(denominator == Int(1)) {
 				numerator
 			} else if(denominator == Int(0)) {
@@ -84,7 +84,7 @@ package num {
 			} else if(canReduce) {
 				val mcde1, minimumCommonDivisorExcept1 = numerator minimumCommonDivisorExcept1 denominator
 				Rational(numerator.intdiv(mcde1), denominator.intdiv(mcde1))
-			} else sys.error("isContinueがfalseなのでresultは実行されてはいけない")
+			} else sys.error("hasFinishedがfalseなのでadvanceは実行されてはいけない")
 		}
 		override def + (pair: Num): Base = addSubBase(pair, Add(_, _))
 		override def - (pair: Num): Base = addSubBase(pair, Sub(_, _))
