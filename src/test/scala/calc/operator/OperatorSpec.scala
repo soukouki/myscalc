@@ -2,6 +2,13 @@ import org.scalatest.{FlatSpec, DiagrammedAssertions}
 import myscalc.calc.num._
 import myscalc.calc.operator._
 
+/** [[operator]]共通のテスト */
+class OperatorSpec extends FlatSpec with DiagrammedAssertions {
+	"advance" should "hasFinishedのやつだけになってから処理を始める" in {
+		assert(Add(Rational(Int(5), Int(10)), Int(1)).advance === Add(Rational(Int(5), Int(10)), Int(1)))
+	}
+}
+
 class AddSubOperatorSpec extends FlatSpec with DiagrammedAssertions {
 	"string" should "右側に+-が来た場合、括弧を付ける" in {
 		assert(Add(Add(Int(1), Int(2)), Add(Int(3), Int(4))).string === "1+2+(3+4)")

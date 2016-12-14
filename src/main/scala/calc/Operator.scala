@@ -18,13 +18,16 @@ sealed trait Operator extends Base {
 			create: (Base, Base) => Operator,
 			solve: (Num, Num) => Base
 		): Base = {
-		(l, r) match {
-			case (_: Operator, _: Operator) | (_: Operator, _: Num) // (1+2)+(3+4) | (1+2)+3
+		(l.hasFinished, r.hasFinished) match {
+			case (false, false) | (false, true) // (1+2)+(3+4) | (1+2)+3
 				=> create(l.advance, r)
-			case (_: Num, _: Operator) // 1+2+3
+			case (true, false) // 1+2+3
 				=> create(l, r.advance)
-			case (nl: Num, nr: Num) // 1+2
-				=> solve(nl, nr)
+			case (true, true) // 1+2
+				=> (l, r) match {
+					case (nl: Num, nr: Num) // trueなのはNumだけ(コンパイルエラー出せないのでwarningのまま)
+						=> solve(nl, nr)
+				}
 		}
 	}
 }
