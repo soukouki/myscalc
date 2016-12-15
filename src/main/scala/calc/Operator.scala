@@ -4,7 +4,7 @@ import myscalc.calc._
 import myscalc.calc.operatorbase._
 
 sealed trait Operator extends Base {
-	override def hasFinished = true
+	override def hasFinished = false
 	def left: Base
 	def right: Base
 	/**

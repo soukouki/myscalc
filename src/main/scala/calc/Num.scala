@@ -16,7 +16,7 @@ object Num {
 package num {
 	/**[[#advance]]できない[[Num]]*/
 	sealed trait SimpleNum extends Num {
-		override def hasFinished = false
+		override def hasFinished = true
 		override def advance: Num = sys.error("hasFinishedがfalseなのでadvanceは実行されてはいけない")
 	}
 	
@@ -71,9 +71,8 @@ package num {
 		[[Int#/]]と違い、両方の数がInt型のときの処理をする
 	*/
 	case class Rational(numerator: Int, denominator: Int) extends Num with MulDivOperator {
-		override def hasFinished: Boolean = {
-			denominator == Int(1) | denominator == Int(0) | denominator.isMinus | canReduce
-		}
+		override def hasFinished: Boolean =
+			denominator != Int(1) && denominator != Int(0) && !denominator.isMinus && !canReduce
 		override def advance: Num = {
 			if(denominator == Int(1)) {
 				numerator

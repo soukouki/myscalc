@@ -5,7 +5,7 @@ import myscalc.calc.operator._
 /** [[operator]]共通のテスト */
 class OperatorSpec extends FlatSpec with DiagrammedAssertions {
 	"advance" should "hasFinishedのやつだけになってから処理を始める" in {
-		assert(Add(Rational(Int(5), Int(10)), Int(1)).advance === Add(Rational(Int(5), Int(10)), Int(1)))
+		assert(Add(Rational(Int(5), Int(10)), Int(1)).advance === Add(Rational(Int(1), Int(2)), Int(1)))
 	}
 }
 

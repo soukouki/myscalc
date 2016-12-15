@@ -22,15 +22,15 @@ class RationalSpec extends FlatSpec with DiagrammedAssertions {
 	it should "約分よりマイナスの扱いを先にする" in {
 		assert(Rational(Int(2), Int(-4)).advance === Rational(Int(-2), Int(4)))
 	}
-	"hasFinished" should "約分ができるときはtrue" in {
-		assert(Rational(Int(2), Int(3)).hasFinished === false)
-		assert(Rational(Int(4), Int(6)).hasFinished === true)
+	"hasFinished" should "約分ができるとき" in {
+		assert(Rational(Int(2), Int(3)).hasFinished === true)
+		assert(Rational(Int(4), Int(6)).hasFinished === false)
 	}
 	it should "マイナスの扱い" in {
-		assert(Rational(Int(1), Int(2)).hasFinished === false)
-		assert(Rational(Int(-1), Int(2)).hasFinished === false)
-		assert(Rational(Int(1), Int(-2)).hasFinished === true)
-		assert(Rational(Int(-1), Int(-2)).hasFinished === true)
+		assert(Rational(Int(1), Int(2)).hasFinished === true)
+		assert(Rational(Int(-1), Int(2)).hasFinished === true)
+		assert(Rational(Int(1), Int(-2)).hasFinished === false)
+		assert(Rational(Int(-1), Int(-2)).hasFinished === false)
 	}
 	"string" should "Divと同じように" in {
 		assert(Rational(Int(1), Int(2)).string === "1/2")

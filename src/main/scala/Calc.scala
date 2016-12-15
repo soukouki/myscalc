@@ -13,6 +13,6 @@ object Calc {
 	}
 	private def calc(tree: Base, old: String): Unit = {
 		if(tree.string != old) println(tree.string)
-		if(tree.hasFinished) calc(tree.advance, tree.string)
+		if(!tree.hasFinished) calc(tree.advance, tree.string)
 	}
 }
