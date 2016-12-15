@@ -58,8 +58,8 @@ class RationalSpec extends FlatSpec with DiagrammedAssertions {
 	"-" should "整数" in {
 		// 1/2-3=(1-2*3)/2=(1-6)/2=-5/2
 		assert(Sub(Rational(Int(1), Int(2)), Int(3)).advance === Div(Sub(Int(1), Mul(Int(2), Int(3))), Int(2)))
-		// 1-2/3=(2-3*1)/3=(2-3)/2=-1/2
-		assert(Sub(Int(1), Rational(Int(2), Int(3))).advance === Div(Sub(Int(2), Mul(Int(3), Int(1))), Int(3)))
+		// 1-2/3=(-2+3*1)/3=(-2+3)/3=1/3
+		assert(Sub(Int(1), Rational(Int(2), Int(3))).advance === Div(Add(Int(-2), Mul(Int(3), Int(1))), Int(3)))
 	}
 	it should "同分母" in {
 		// 1/3-2/3=(1-2)/3=-1/3

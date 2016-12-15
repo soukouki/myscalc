@@ -21,8 +21,16 @@ package num {
 	}
 	
 	case class Int(value: BigInt) extends SimpleNum {
-		override def + (pair: Num): Base = addSubBase(pair, _ + _, Add(_, _))
-		override def - (pair: Num): Base = addSubBase(pair, _ - _, Sub(_, _))
+		override def + (pair: Num): Base = pair match {
+			case Int(n) => Int(value + n)
+			case _: Inf => Inf()
+			case Rational(pn, pd) => Div(Add(pn, Mul(pd, this)), pd)
+		}
+		override def - (pair: Num): Base = pair match {
+			case Int(n) => Int(value - n)
+			case _: Inf => Inf()
+			case Rational(pn, pd) => Div(Add(pn.uminus, Mul(pd, this)), pd)
+		}
 		override def * (pair: Num): Base = pair match {
 			case Int(n) => Int(value * n)
 			case _: Inf => Inf()
@@ -49,14 +57,6 @@ package num {
 		private[num] def intdiv(pair: Int): Int = Int(value / pair.value)
 		private[num] def isMinus: Boolean = value < 0
 		private[num] def uminus: Int = Int(0 - value)
-		
-		private def addSubBase(pair: Num, intadvance: (BigInt, BigInt) => BigInt, create: (Base, Base) => Base): Base = {
-			pair match {
-				case Int(n) => Int(intadvance(value, n))
-				case _: Inf => Inf()
-				case Rational(pn, pd) => Div(create(pn, Mul(pd, this)), pd)
-			}
-		}
 	}
 	
 	case class Inf() extends SimpleNum {
