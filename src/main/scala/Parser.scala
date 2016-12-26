@@ -22,6 +22,10 @@ object Parse extends RegexParsers {
 		"*" ^^ {op => (l, r) => Mul(l, r)} |
 		"/" ^^ {op => (l, r) => Div(l, r)}
 	)
-	def parenthesis: Parser[Base] = "(" ~ expr ~ ")" ^^ {case "(" ~ exp ~ ")" => exp}
-	def number: Parser[Base] = """(\+|-)?\d+""".r ^^ {s => Int(BigInt(s))}
+	def parenthesis: Parser[Base] = "(" ~> expr <~ ")" ^^ identity
+	
+	def number: Parser[Base] = integer ||| decimal
+	def integer: Parser[Base] = "(\\+|-)?[1-9][0-9]*".r ^^ {s => Int(BigInt(s))}
+	def decimal: Parser[Base] = "(\\+|-)?[0-9]+".r ~ "." ~ "[0-9]+".r ^^
+		{case l ~ "." ~ r => Decimal(Int(BigInt(l + r)), Int(-(r.length)))}
 }
