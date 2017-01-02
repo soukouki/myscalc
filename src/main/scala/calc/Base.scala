@@ -5,4 +5,6 @@ trait Base {
 	def hasFinished: Boolean
 	def advance: Base
 	def string: String
+	
+	private[calc] def isRightmostMinus: Boolean = string.head=='-'
 }
