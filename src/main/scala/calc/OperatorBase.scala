@@ -1,5 +1,8 @@
 package myscalc.calc.operatorbase
-/** [[Rational]]でも使われるため、[[operator]]から独立したパッケージになっている */
+/**
+	[[Rational]]でも使われるため、[[operator]]から独立したパッケージになっている
+	今はほぼ[[#string]]の処理のためにある
+*/
 
 import myscalc.calc._
 import myscalc.calc.operator.Operator
@@ -7,9 +10,12 @@ import myscalc.calc.operator.Operator
 /** [[Mul]][[Div]]よりも優先順位が低い演算子のtrait */
 private[calc] trait AddSubOperator {
 	protected def stringBase(left: Base, symbol: String, right: Base): String = (left, right) match {
-		case (_, _: AddSubOperator) => s"${left.string}$symbol(${right.string})"
+		case (_, _) if right.isRightmostMinus => putParenthesesString(left, symbol, right)
+		case (_, _: AddSubOperator) => putParenthesesString(left, symbol, right)
 		case _ => s"${left.string}$symbol${right.string}"
 	}
+	
+	private def putParenthesesString(l: Base, s: String, r: Base): String = s"${l.string}$s(${r.string})"
 }
 private[calc] object AddSubOperator {
 	def unapply(ope: AddSubOperator): Option[(Base, Base)] = {

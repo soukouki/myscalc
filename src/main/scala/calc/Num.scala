@@ -2,14 +2,8 @@ package myscalc.calc
 
 import scala.{Int => ScalaInt}
 import myscalc.calc.operatorbase.MulDivOperator
-import myscalc.calc.operator._
 
-sealed trait Num extends Base {
-	def + (pair: Num): Base
-	def - (pair: Num): Base
-	def * (pair: Num): Base
-	def / (pair: Num): Base
-}
+sealed trait Num extends Base
 object Num {
 	def unapply(n: Num) = Option(())
 }
@@ -21,27 +15,19 @@ package num {
 		override def advance: Num = sys.error("hasFinishedがfalseなのでadvanceは実行されてはいけない")
 	}
 	
-	case class Int(value: BigInt) extends SimpleNum {
-		override def + (pair: Num): Base = addSubBase(pair, Add(_, _), _ + _)
-		override def - (pair: Num): Base = addSubBase(pair, Sub(_, _), _ - _)
-		override def * (pair: Num): Base = pair match {
-			case Int(n) => Int(value * n)
-			case _: Inf => Inf()
-			case _: Rational => pair * this
-			case Decimal(si, ex) => Div(Mul(this, si), ex.abs.pow10)
-		}
-		/**
-			両方がInt型のときの処理は[[Rational]]でやる
-		*/
-		override def / (pair: Num): Base = pair match {
-			case i: Int => Rational(this, i)
-			case _: Inf => Inf()
-			case Rational(pn, pd) => Div(Mul(this, pd), pn)
-			case d: Decimal => Div(this, d.toRational)
-		}
+	case class Int(value: BigInt) extends SimpleNum with Ordered[Int] {
 		override def string: String = value.toString
+		override def compare(p: Int) = value.compare(p.value)
 		
-		private[num] def unary_- = Int(-value)
+		// [[Operator]]で計算に使う
+		private[calc] def +(pair: Int) = Int(value + pair.value)
+		private[calc] def -(pair: Int) = Int(value - pair.value)
+		private[calc] def *(pair: Int) = Int(value * pair.value)
+		private[calc] def /(pair: Int) = Int(value / pair.value)
+	 	private[calc] def unary_- = Int(-value)
+		private[calc] def divisible(pair: Int) = (value % pair.value) == 0
+		private[calc] def pow10: Int = Int(BigInt(10) pow toInt)
+		
 		private[num] def gcd(pair: Int): Int = Int(value gcd pair.value)
 		private[num] def minimumCommonDivisorExcept1(pair: Int): Int = {
 			def mcde1(i: BigInt, a: BigInt, b: BigInt): BigInt = {
@@ -59,23 +45,9 @@ package num {
 			if(int!=value) sys.error("overflow error")
 			int
 		}
-		private[num] def pow10: Int = Int(BigInt(10) pow toInt)
-		private[num] def abs: Int = if(isMinus) uminus else this
-		
-		private def addSubBase(pair: Num, create: (Base, Base) => Base, intSolve: (BigInt, BigInt) => BigInt): Base =
-			pair match {
-				case Int(n) => Int(intSolve(value, n))
-				case _: Inf => Inf()
-				case Rational(pn, pd) => Div(create(Mul(pd, this), pn), pd)
-				case Decimal(si, ex) => Div(create((-ex).pow10, si), this * (-ex).pow10)
-			}
 	}
 	
 	case class Inf() extends SimpleNum {
-		override def + (pair: Num): Num = Inf()
-		override def - (pair: Num): Num = Inf()
-		override def * (pair: Num): Num = Inf()
-		override def / (pair: Num): Num = Inf()
 		override def string: String = "Inf"
 	}
 	
@@ -97,30 +69,9 @@ package num {
 				Rational(numerator.intdiv(mcde1), denominator.intdiv(mcde1))
 			} else sys.error("hasFinishedがfalseなのでadvanceは実行されてはいけない")
 		}
-		override def + (pair: Num): Base = addSubBase(pair, Add(_, _))
-		override def - (pair: Num): Base = addSubBase(pair, Sub(_, _))
-		override def * (pair: Num): Base = pair match {
-			case _: Int => Div(Mul(numerator, pair), denominator)
-			case Rational(pn, pd) => Div(Mul(numerator, pn), Mul(denominator, pd))
-			case _: Inf => Inf()
-			case d: Decimal => Mul(this, d.toRational)
-		}
-		override def / (pair: Num): Base = pair match {
-			case _: Int => Div(numerator, Mul(denominator, pair))
-			case Rational(pn, pd) => Div(Mul(numerator, pd), Mul(denominator, pn))
-			case _: Inf => Inf()
-			case d: Decimal => Div(this, d.toRational)
-		}
 		override def string: String = stringBase(numerator, "/", denominator)
 		
 		private def canReduce: Boolean = (numerator gcd denominator) != Int(1)
-		private def addSubBase(pair: Num, create: (Base, Base) => Base): Base = pair match {
-			case _: Int => Div(create(numerator, Mul(denominator, pair)), denominator)
-			case Rational(pn, `denominator`) => Div(create(numerator, pn), denominator)
-			case Rational(pn, pd) => Div(create(Mul(numerator, pd), Mul(pn, denominator)), Mul(denominator, pd))
-			case _: Inf => Inf()
-			case d: Decimal => create(this, d.toRational)
-		}
 	}
 	
 	/**
@@ -129,29 +80,16 @@ package num {
 		
 		{{{
 			Decimal(Int(12), Int(-1)) //=> "1.2"
+			Decimal(Int(10), Int(-2)) //=> "0.10"
 		}}}
 		
 		@param si significand
 		@param ex exponentiation
 	*/
 	case class Decimal(si: Int, ex: Int) extends SimpleNum {
-		if(ex.value >= 0) sys.error("exが0以上の場合は考慮しない")
+		if(ex.value >= 0) sys.error("exが0を超える場合は考慮しない")
 		ex.toInt //Int型の範囲を超えていないかチェックする
 		
-		override def +(pair: Num): Base = addSubBase(pair, Add(_, _))
-		override def -(pair: Num): Base = addSubBase(pair, Sub(_, _))
-		override def *(pair: Num): Base = pair match {
-			case _: Int => Div(Mul(si, pair), ex.abs.pow10)
-			case _: Rational => Mul(toRational, pair)
-			case d: Decimal => Mul(toRational, d.toRational)
-			case _: Inf => Inf()
-		}
-		override def /(pair: Num): Base = pair match {
-			case _: Int => Div(toRational, pair)
-			case _: Rational => Div(toRational, pair)
-			case d: Decimal => Div(toRational, d.toRational)
-			case _: Inf => Inf()
-		}
 		override def string: String = {
 			val minusRevise = if(si.isMinus) 1 else 0
 			val nonDotStr = "0" * -(ex.toInt - 1 + si.string.length - minusRevise) + si.toUnSign.string
@@ -159,13 +97,6 @@ package num {
 			(if(si.isMinus) "-" else "") + l + "." + r
 		}
 		
-		private[num] def toRational = Rational(si, (-ex).pow10)
-		
-		private def addSubBase(pair: Num, create: (Base, Base) => Base): Base = pair match {
-			case _: Int => Div(create(si, pair * (-ex).pow10), (-ex).pow10)
-			case _: Rational => create(toRational, pair)
-			case _: Inf => Inf()
-			case d: Decimal => create(toRational, d.toRational)
-		}
+		private[calc] def toRational = Rational(si, (-ex).pow10)
 	}
 }

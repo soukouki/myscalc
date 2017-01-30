@@ -21,31 +21,31 @@ class DecimalSpec extends FlatSpec with DiagrammedAssertions with CalcTestUtilit
 		assert(Decimal(Int(-2), Int(-1)).string === "-0.2")
 	}
 	"+" should "整数" in {
-		assert(p("0.01+3").advance === p("(1+300)/100"))
-		assert(p("1+0.2").advance === p("(10+2)/10"))
+		assert(p("0.01+3").advance === p("3.01"))
+		assert(p("1+0.2").advance === p("1.2"))
 	}
 	it should "分数" in {
 		assert(p("0.1+2/3").advance === p("1/10+2/3"))
 		assert(p("1/2+3.4").advance === p("1/2+34/10"))
 	}
 	it should "小数" in {
-		assert(p("0.1+0.2").advance === p("1/10+2/10"))
-		assert(p("0.01+0.2").advance === p("1/100+2/10"))
+		assert(p("0.1+0.2").advance === p("0.3"))
+		assert(p("0.01+0.2").advance === p("0.21"))
 	}
 	"-" should "整数" in {
-		assert(p("0.3-4").advance === p("(3-40)/10"))
-		assert(p("1-2.3").advance === p("(10-23)/10"))
+		assert(p("0.3-4").advance === p("-3.7"))
+		assert(p("1-2.3").advance === p("-1.3"))
 	}
 	it should "分数" in {
 		assert(p("0.1-2/3").advance === p("1/10-2/3"))
 		assert(p("1/2-0.01").advance === p("1/2-1/100"))
 	}
 	it should "小数" in {
-		assert(p("0.1-0.03").advance === p("1/10-3/100"))
+		assert(p("0.1-0.03").advance === p("0.07"))
 	}
 	"*" should "整数" in {
-		assert(p("0.3*3").advance === p("3*3/10"))
-		assert(p("2*0.1").advance === p("2*1/10"))
+		assert(p("0.3*3").advance === p("0.9"))
+		assert(p("2*0.1").advance === p("0.2"))
 	}
 	it should "分数" in {
 		assert(p("0.3*(1/2)").advance === p("3/10*(1/2)"))
