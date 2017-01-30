@@ -44,8 +44,8 @@ class DecimalSpec extends FlatSpec with DiagrammedAssertions with CalcTestUtilit
 		assert(p("0.1-0.03").advance === p("0.07"))
 	}
 	"*" should "整数" in {
-		assert(p("0.3*3").advance === p("3/10*3"))
-		assert(p("2*0.1").advance === p("2*(1/10)"))
+		assert(p("0.3*3").advance === p("0.9"))
+		assert(p("2*0.1").advance === p("0.2"))
 	}
 	it should "分数" in {
 		assert(p("0.3*(1/2)").advance === p("3/10*(1/2)"))

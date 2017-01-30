@@ -92,6 +92,8 @@ case class Mul(left: Base, right: Base) extends Operator with MulDivOperator {
 		case (p: Int, Rational(rn, rd)) => Div(Mul(p, rn), rd)
 		case (Rational(ln, ld), Rational(rn, rd)) => Div(Mul(ln, rn), Mul(ld, rd))
 		case (l: Decimal, r: Decimal) => Mul(l.toRational, r.toRational)
+		case (Decimal(si, ex), r: Int) => Decimal(si * r, ex)
+		case (l: Int, Decimal(si, ex)) => Decimal(si * l, ex)
 		case (l: Decimal, r) => Mul(l.toRational, r)
 		case (l, r: Decimal) => Mul(l, r.toRational)
 	}
