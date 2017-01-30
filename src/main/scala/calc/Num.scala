@@ -3,9 +3,7 @@ package myscalc.calc
 import scala.{Int => ScalaInt}
 import myscalc.calc.operatorbase.MulDivOperator
 
-sealed trait Num extends Base {
-	private[calc] def unary_- : Num
-}
+sealed trait Num extends Base
 object Num {
 	def unapply(n: Num) = Option(())
 }
@@ -20,13 +18,13 @@ package num {
 	case class Int(value: BigInt) extends SimpleNum with Ordered[Int] {
 		override def string: String = value.toString
 		override def compare(p: Int) = value.compare(p.value)
-		override def unary_- = Int(-value)
 		
 		// [[Operator]]で計算に使う
 		private[calc] def +(pair: Int) = Int(value + pair.value)
 		private[calc] def -(pair: Int) = Int(value - pair.value)
 		private[calc] def *(pair: Int) = Int(value * pair.value)
 		private[calc] def /(pair: Int) = Int(value / pair.value)
+	 	private[calc] def unary_- = Int(-value)
 		private[calc] def divisible(pair: Int) = (value % pair.value) == 0
 		private[calc] def pow10: Int = Int(BigInt(10) pow toInt)
 		
@@ -47,12 +45,10 @@ package num {
 			if(int!=value) sys.error("overflow error")
 			int
 		}
-		private[num] def abs: Int = if(isMinus) uminus else this
 	}
 	
 	case class Inf() extends SimpleNum {
 		override def string: String = "Inf"
-		override def unary_- = Inf()
 	}
 	
 	/**
@@ -74,7 +70,6 @@ package num {
 			} else sys.error("hasFinishedがfalseなのでadvanceは実行されてはいけない")
 		}
 		override def string: String = stringBase(numerator, "/", denominator)
-		override def unary_- = Rational(-numerator, denominator)
 		
 		private def canReduce: Boolean = (numerator gcd denominator) != Int(1)
 	}
@@ -101,7 +96,6 @@ package num {
 			val (l, r) = nonDotStr.splitAt(nonDotStr.length + ex.toInt)
 			(if(si.isMinus) "-" else "") + l + "." + r
 		}
-		override def unary_- = Decimal(-si, ex)
 		
 		private[calc] def toRational = Rational(si, (-ex).pow10)
 	}
