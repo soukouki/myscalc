@@ -81,13 +81,17 @@ class MulSpec extends FlatSpec with DiagrammedAssertions {
 }
 
 class DivSpec extends FlatSpec with DiagrammedAssertions {
-	"advance" should "Intを2つ受け取り、分数にして返す" in {
-		assert(Div(Int(4), Int(2)).advance === Rational(Int(4), Int(2)))
+	"advance" should "数を1つ受け取り、割って返す" in {
+		assert(Div(Int(4), Int(2)).advance === Int(2))
+		assert(Div(Int(3), Int(1)).advance === Int(3))
+	}
+	it should "割り切れないときは分数にして返す" in {
+		assert(Div(Int(3), Int(2)).advance === Rational(Int(3), Int(2)))
 		assert(Div(Int(3), Int(10)).advance === Rational(Int(3), Int(10)))
 	}
 	it should "0で割った場合、Infを返す" in {
-		assert(Div(Int(2), Int(0)).advance.advance === Inf())
-		assert(Div(Int(0), Int(0)).advance.advance === Inf())
+		assert(Div(Int(2), Int(0)).advance === Inf())
+		assert(Div(Int(0), Int(0)).advance === Inf())
 	}
 	it should "式を受け取ると、先に計算する方だけを計算し、返す" in {
 		assert(Div(Add(Int(2), Int(1)), Add(Int(1), Int(2))).advance === Div(Int(3), Add(Int(1), Int(2))))

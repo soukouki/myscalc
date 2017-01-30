@@ -1,5 +1,8 @@
 package myscalc.calc.operatorbase
-/** [[Rational]]でも使われるため、[[operator]]から独立したパッケージになっている */
+/**
+	[[Rational]]でも使われるため、[[operator]]から独立したパッケージになっている
+	今はほぼ[[#string]]の処理のためにある
+*/
 
 import myscalc.calc._
 import myscalc.calc.operator.Operator
