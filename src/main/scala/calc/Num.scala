@@ -36,10 +36,8 @@ package num {
 			}
 			Int(mcde1(2, value, pair.value))
 		}
-		private[num] def intdiv(pair: Int): Int = Int(value / pair.value)
 		private[num] def isMinus: Boolean = value < 0
-		private[num] def uminus: Int = Int(0 - value)
-		private[num] def toUnSign: Int = if(isMinus) uminus else this
+		private[num] def toUnSign: Int = if(isMinus) -this else this
 		private[num] def toInt: ScalaInt = {
 			val int = value.toInt
 			if(int!=value) sys.error("overflow error")
@@ -63,10 +61,10 @@ package num {
 			} else if(denominator == Int(0)) {
 				Inf()
 			} else if (denominator.isMinus) {
-				Rational(numerator.uminus, denominator.uminus)
+				Rational(-numerator, -denominator)
 			} else if(canReduce) {
 				val mcde1, minimumCommonDivisorExcept1 = numerator minimumCommonDivisorExcept1 denominator
-				Rational(numerator.intdiv(mcde1), denominator.intdiv(mcde1))
+				Rational(numerator / mcde1, denominator / mcde1)
 			} else sys.error("hasFinishedがfalseなのでadvanceは実行されてはいけない")
 		}
 		override def string: String = stringBase(numerator, "/", denominator)
