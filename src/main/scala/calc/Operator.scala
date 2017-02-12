@@ -36,6 +36,8 @@ object Operator {
 	def unapply(ope: Operator): Option[(Base, Base)] = Option((ope.left, ope.right))
 }
 
+// TODO(v1.3.0) DecimalやRecurringDecimalのcaseがいくつもあるのでPartialFunctionを使ってもう少し簡潔にする
+
 /** [[Add]][[Sub]]の主に[[#solve]]をまとめたクラス */
 sealed trait AddSub extends Operator with AddSubOperator {
 	/**
@@ -62,6 +64,9 @@ sealed trait AddSub extends Operator with AddSubOperator {
 			val (lsi, rsi, ex) = decimalAlignment(l, r)
 			Decimal(int_solve(lsi, rsi), ex)
 		}
+		case (l: RecurringDecimal, r: RecurringDecimal) => create(l.toFormula, r.toFormula)
+		case (l: RecurringDecimal, r) => create(l.toFormula, r)
+		case (l, r: RecurringDecimal) => create(l, r.toFormula)
 	}
 	private def decimalAlignment(l: Decimal, r: Decimal): (Int, Int, Int) = {
 			 if (l.ex < r.ex) (l.si, r.si * (r.ex - l.ex).pow10, l.ex)
@@ -79,7 +84,11 @@ case class Add(left: Base, right: Base) extends AddSub {
 case class Sub(left: Base, right: Base) extends AddSub {
 	override def advance: Base = advanceBase(left, right, Sub(_, _))
 	override def string: String = stringBase(left, "-", right)
-	override def solve(l: Num, r: Num) = addSolve(l, r, Sub(_, _), _ - _)
+	override def solve(left: Num, right: Num) = (left, right) match {
+		// シンプルな場合
+		case (RecurringDecimal(ld, lr), RecurringDecimal(rd, rr)) if lr == rr && ld.ex == rd.ex => Sub(ld, rd)
+		case (l, r) => {addSolve(l, r, Sub(_, _), _ - _)}
+	}
 }
 
 case class Mul(left: Base, right: Base) extends Operator with MulDivOperator {
@@ -91,11 +100,14 @@ case class Mul(left: Base, right: Base) extends Operator with MulDivOperator {
 		case (Rational(ln, ld), p: Int) => Div(Mul(ln, p), ld)
 		case (p: Int, Rational(rn, rd)) => Div(Mul(p, rn), rd)
 		case (Rational(ln, ld), Rational(rn, rd)) => Div(Mul(ln, rn), Mul(ld, rd))
-		case (l: Decimal, r: Decimal) => Mul(l.toRational, r.toRational)
 		case (Decimal(si, ex), r: Int) => Decimal(si * r, ex)
 		case (l: Int, Decimal(si, ex)) => Decimal(si * l, ex)
+		case (l: Decimal, r: Decimal) => Mul(l.toRational, r.toRational)
 		case (l: Decimal, r) => Mul(l.toRational, r)
 		case (l, r: Decimal) => Mul(l, r.toRational)
+		case (l: RecurringDecimal, r: RecurringDecimal) => Mul(l.toFormula, r.toFormula)
+		case (l: RecurringDecimal, r) => Mul(l.toFormula, r)
+		case (l, r: RecurringDecimal) => Mul(l, r.toFormula)
 	}
 }
 
@@ -114,6 +126,9 @@ case class Div(left: Base, right: Base) extends Operator with MulDivOperator {
 			case (l: Decimal, r: Decimal) => Div(l.toRational, r.toRational)
 			case (l: Decimal, r) => Div(l.toRational, r)
 			case (l, r: Decimal) => Div(l, r.toRational)
+			case (l: RecurringDecimal, r: RecurringDecimal) => Div(l.toFormula, r.toFormula)
+			case (l: RecurringDecimal, r) => Div(l.toFormula, r)
+			case (l, r: RecurringDecimal) => Div(l, r.toFormula)
 		}
 	}
 }

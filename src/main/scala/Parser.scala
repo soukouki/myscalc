@@ -11,21 +11,26 @@ object Parse extends RegexParsers {
 		case failure : NoSuccess => Left(failure.msg)
 	}
 	
-	def expr: Parser[Base] = exprAddSub
-	def exprAddSub: Parser[Base] = chainl1(
+	private def expr: Parser[Base] = exprAddSub
+	private def exprAddSub: Parser[Base] = chainl1(
 		exprMulDiv,
-		"+" ^^ {op => (l, r) => Add(l, r)} |
+		"+" ^^ {op => (l, r) => Add(l, r)} |||
 		"-" ^^ {op => (l, r) => Sub(l, r)}
 	)
-	def exprMulDiv: Parser[Base] = chainl1(
-		number | parenthesis,
-		"*" ^^ {op => (l, r) => Mul(l, r)} |
+	private def exprMulDiv: Parser[Base] = chainl1(
+		number ||| parenthesis,
+		"*" ^^ {op => (l, r) => Mul(l, r)} |||
 		"/" ^^ {op => (l, r) => Div(l, r)}
 	)
-	def parenthesis: Parser[Base] = "(" ~> expr <~ ")" ^^ identity
+	private def parenthesis: Parser[Base] = "(" ~> expr <~ ")" ^^ identity
 	
-	def number: Parser[Base] = integer ||| decimal
-	def integer: Parser[Base] = "(\\+|-)?[1-9][0-9]*".r ^^ {s => Int(BigInt(s))}
-	def decimal: Parser[Base] = "(\\+|-)?[0-9]+".r ~ "." ~ "[0-9]+".r ^^
+	private def number: Parser[Base] = integer ||| decimal ||| recurringDecimal
+	private def integer: Parser[Base] = signedIntegerLiteral ^^ {s => Int(BigInt(s))}
+	private def decimal: Parser[Base] = signedIntegerLiteral ~ "." ~ "[0-9]+".r ^^
 		{case l ~ "." ~ r => Decimal(Int(BigInt(l + r)), Int(-(r.length)))}
+	private def recurringDecimal: Parser[Base] = signedIntegerLiteral ~ "." ~ "[0-9]*".r ~ "(" ~ "[0-9]+".r ~ ")" ^^
+		{case di ~ "." ~ dd ~ "(" ~ r ~ ")" =>
+			RecurringDecimal(Decimal(Int(BigInt(di + dd)), Int(-(dd.length))), Int(BigInt(r)))}
+	
+	private def signedIntegerLiteral: Parser[String] = "(\\+|-)?([1-9][0-9]*|0)".r ^^ identity
 }
