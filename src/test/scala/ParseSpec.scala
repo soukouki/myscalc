@@ -44,5 +44,8 @@ class ParseSpec extends FlatSpec with DiagrammedAssertions {
 		assert(Parse("1.23") === Right(Decimal(Int(123), Int(-2))))
 		assert(Parse("0.00") === Right(Decimal(Int(0), Int(-2))))
 	}
-	it should "循環小数を処理できるか"
+	it should "循環小数を処理できるか" in {
+		assert(Parse("3.(3)") === Right(RecurringDecimal(Decimal(Int(3), Int(0)), Int(3))))
+		assert(Parse("1.23(45)") === Right(RecurringDecimal(Decimal(Int(123), Int(-2)), Int(45))))
+	}
 }

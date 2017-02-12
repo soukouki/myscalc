@@ -24,9 +24,11 @@ package num {
 		private[calc] def -(pair: Int) = Int(value - pair.value)
 		private[calc] def *(pair: Int) = Int(value * pair.value)
 		private[calc] def /(pair: Int) = Int(value / pair.value)
+		private[calc] def %(pair: Int) = Int(value % pair.value)
 	 	private[calc] def unary_- = Int(-value)
 		private[calc] def divisible(pair: Int) = (value % pair.value) == 0
 		private[calc] def pow10: Int = Int(BigInt(10) pow toInt)
+		private[calc] def digits = Int(string.length)
 		
 		private[num] def gcd(pair: Int): Int = Int(value gcd pair.value)
 		private[num] def minimumCommonDivisorExcept1(pair: Int): Int = {
@@ -36,10 +38,8 @@ package num {
 			}
 			Int(mcde1(2, value, pair.value))
 		}
-		private[num] def intdiv(pair: Int): Int = Int(value / pair.value)
 		private[num] def isMinus: Boolean = value < 0
-		private[num] def uminus: Int = Int(0 - value)
-		private[num] def toUnSign: Int = if(isMinus) uminus else this
+		private[num] def toUnSign: Int = if(isMinus) -this else this
 		private[num] def toInt: ScalaInt = {
 			val int = value.toInt
 			if(int!=value) sys.error("overflow error")
@@ -63,10 +63,10 @@ package num {
 			} else if(denominator == Int(0)) {
 				Inf()
 			} else if (denominator.isMinus) {
-				Rational(numerator.uminus, denominator.uminus)
+				Rational(-numerator, -denominator)
 			} else if(canReduce) {
 				val mcde1, minimumCommonDivisorExcept1 = numerator minimumCommonDivisorExcept1 denominator
-				Rational(numerator.intdiv(mcde1), denominator.intdiv(mcde1))
+				Rational(numerator / mcde1, denominator / mcde1)
 			} else sys.error("hasFinishedがfalseなのでadvanceは実行されてはいけない")
 		}
 		override def string: String = stringBase(numerator, "/", denominator)
@@ -87,7 +87,7 @@ package num {
 		@param ex exponentiation
 	*/
 	case class Decimal(si: Int, ex: Int) extends SimpleNum {
-		if(ex.value >= 0) sys.error("exが0を超える場合は考慮しない")
+		if(ex.value > 0) sys.error("exが0超えの場合は考慮しない")
 		ex.toInt //Int型の範囲を超えていないかチェックする
 		
 		override def string: String = {
@@ -98,5 +98,17 @@ package num {
 		}
 		
 		private[calc] def toRational = Rational(si, (-ex).pow10)
+	}
+	
+	case class RecurringDecimal(decimal: Decimal, recurring: Int) extends Num {
+		override def advance: myscalc.calc.Base = decimal
+		override def hasFinished = recurring != Int(0)
+		override def string: String = s"${decimal.string}(${recurring.string})"
+		
+		private[calc] def toFormula: Base = {
+			import operator._ // 仕組み的に逃れられない
+			val rdp = recurring.digits.pow10
+			Div(Sub(RecurringDecimal(Decimal(decimal.si * rdp + recurring, decimal.ex), recurring), this), rdp - Int(1))
+		}
 	}
 }
