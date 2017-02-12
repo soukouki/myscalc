@@ -51,9 +51,7 @@ package num {
 		override def string: String = "Inf"
 	}
 	
-	/**
-		[[Int#/]]や[[Div]]と違い、両方の数がInt型のときの処理をする
-	*/
+	/** [[operator.Div]]と違い、両方の数がInt型のときの処理をする */
 	case class Rational(numerator: Int, denominator: Int) extends Num with MulDivOperator {
 		override def hasFinished: Boolean =
 			denominator != Int(1) && denominator != Int(0) && !denominator.isMinus && !canReduce
@@ -78,10 +76,7 @@ package num {
 		[[ex]]が0以上の場合は考慮しない<br>
 		[[ex]]は内部でInt型になることがある
 		
-		{{{
-			Decimal(Int(12), Int(-1)) //=> "1.2"
-			Decimal(Int(10), Int(-2)) //=> "0.10"
-		}}}
+		DecimalSpecでexの動作を確認
 		
 		@param si significand
 		@param ex exponentiation
@@ -90,7 +85,9 @@ package num {
 		if(ex.value > 0) sys.error("exが0超えの場合は考慮しない")
 		ex.toInt //Int型の範囲を超えていないかチェックする
 		
-		override def string: String = {
+		def string: String = string(false)
+		private[num] def string(appendDotAlways: Boolean): String = {
+			if(!appendDotAlways && ex==Int(0)) return si.string
 			val minusRevise = if(si.isMinus) 1 else 0
 			val nonDotStr = "0" * -(ex.toInt - 1 + si.string.length - minusRevise) + si.toUnSign.string
 			val (l, r) = nonDotStr.splitAt(nonDotStr.length + ex.toInt)
@@ -103,7 +100,7 @@ package num {
 	case class RecurringDecimal(decimal: Decimal, recurring: Int) extends Num {
 		override def advance: myscalc.calc.Base = decimal
 		override def hasFinished = recurring != Int(0)
-		override def string: String = s"${decimal.string}(${recurring.string})"
+		override def string: String = s"${decimal.string(appendDotAlways = true)}(${recurring.string})"
 		
 		private[calc] def toFormula: Base = {
 			import operator._ // 仕組み的に逃れられない
