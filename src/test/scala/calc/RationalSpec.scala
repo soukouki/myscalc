@@ -61,7 +61,7 @@ class RationalSpec extends FlatSpec with DiagrammedAssertions with CalcTestUtili
 	}
 	"*" should "整数" in {
 		assert(p("1/2*3").advance === p("1*3/2"))
-		assert(p("1*(2/3)").advance === p("1*2/3"))
+		assert(p("4*(2/3)").advance === p("4*2/3"))
 	}
 	it should "分数" in {
 		assert(p("1/2*(3/4)").advance === p("1*3/(2*4)"))

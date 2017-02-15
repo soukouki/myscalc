@@ -96,6 +96,10 @@ case class Mul(left: Base, right: Base) extends Operator with MulDivOperator {
 	override def string: String = stringBase(left, "*", right)
 	override def solve(l: Num, r: Num) = (left, right) match {
 		case (Inf(), _) | (_, Inf()) => Inf()
+		case (_, Int(n)) if n == 0 => Int(0)
+		case (l, Int(n)) if n == 1 => l
+		case (Int(n), _) if n == 0 => Int(0)
+		case (Int(n), r) if n == 1 => r
 		case (l: Int, r: Int) => l * r
 		case (Rational(ln, ld), p: Int) => Div(Mul(ln, p), ld)
 		case (p: Int, Rational(rn, rd)) => Div(Mul(p, rn), rd)
@@ -115,9 +119,10 @@ case class Div(left: Base, right: Base) extends Operator with MulDivOperator {
 	override def advance: Base = advanceBase(left, right, Div(_, _))
 	override def string: String = stringBase(left, "/", right)
 	override def solve(l: Num, r: Num) = {
-		val zero = Int(0) // 変数に一回入れないとコンパイルが通らなかった
+		val zero: BigInt = 0 // 変数に一回入れないとできないっぽい
 		(left, right) match {
-			case (Inf(), _) | (_, Inf()) | (_, `zero`) => Inf()
+			case (Inf(), _) | (_, Inf()) | (_, Int(`zero`)) => Inf()
+			case (l, Int(n)) if n == 1 => l
 			case (l: Int, r: Int) if l divisible r => l / r
 			case (l: Int, r: Int) => Rational(l, r) // 割り切れないとき
 			case (Rational(ln, ld), r: Int) => Div(ln, Mul(ld, r))

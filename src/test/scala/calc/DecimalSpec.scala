@@ -20,6 +20,9 @@ class DecimalSpec extends FlatSpec with DiagrammedAssertions with CalcTestUtilit
 		assert(Decimal(Int(2), Int(-2)).string === "0.02")
 		assert(Decimal(Int(-2), Int(-1)).string === "-0.2")
 	}
+	it should "exが0が0のとき(RecurringDecimalで使用するときに出る)" in {
+		assert(Decimal(Int(2), Int(0)).string === "2")
+	}
 	"+" should "整数" in {
 		assert(p("0.01+3").advance === p("3.01"))
 		assert(p("1+0.2").advance === p("1.2"))
