@@ -1,13 +1,25 @@
 import org.scalatest.{FlatSpec, DiagrammedAssertions}
 
+import myscalc.variables.Variables
+
 import myscalc.Parse
 import myscalc.calc.Base
 
-trait CalcTestUtility {
-	def p(f: String): Base = {
-		def i(t: Base, f: String): Base = if(!t.hasFinished && t.advance.string == f) i(t.advance, f) else t
-		i(Parse(f).right.get, f)
-	}
-}
+trait FlatTest extends FlatSpec with DiagrammedAssertions
 
-trait FlatCalcTest extends FlatSpec with DiagrammedAssertions with CalcTestUtility
+trait FlatCalcTest extends FlatTest {
+	def p(formula: String): Base = {
+		pI(Parse(formula).right.get, formula)
+	}
+	
+	private def pI(t: Base, formula: String): Base = {
+		if(!t.hasFinished(defaultVariables)) {
+			val (ad, _) = t.advance(defaultVariables)
+			if(ad.string == formula) pI(ad, formula) else t
+		} else t
+	}
+	
+	val defaultVariables = Variables(Map())
+	
+	def advance(b: Base, vs: Variables = defaultVariables): Base = {val (ad, _) = b.advance(vs); ad}
+}
