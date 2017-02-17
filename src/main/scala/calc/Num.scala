@@ -98,14 +98,18 @@ package num {
 	}
 	
 	case class RecurringDecimal(decimal: Decimal, recurring: Int) extends Num {
+		if(recurring.isMinus) sys.error("recurringが負の数になっている")
+		
 		override def advance: myscalc.calc.Base = decimal
 		override def hasFinished = recurring != Int(0)
 		override def string: String = s"${decimal.string(appendDotAlways = true)}(${recurring.string})"
 		
 		private[calc] def toFormula: Base = {
-			import operator._ // 仕組み的に逃れられない
+			import operator._ // TODO(v2までに) この行を消す
 			val rdp = recurring.digits.pow10
-			Div(Sub(RecurringDecimal(Decimal(decimal.si * rdp + recurring, decimal.ex), recurring), this), rdp - Int(1))
+			// 計算で求めるとsiがマイナスの場合とかが面倒なので文字列で計算してる。
+			val newDesi = Int(BigInt(decimal.si.string + recurring.string))
+			Div(Sub(RecurringDecimal(Decimal(newDesi, decimal.ex), recurring), this), rdp - Int(1))
 		}
 	}
 }
