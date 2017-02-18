@@ -25,11 +25,17 @@ class RecurringDecimalSpec extends FlatSpec with DiagrammedAssertions with CalcT
 	"-" should "シンプルなパターン" in {
 		assert(p("12.3(3)-1.2(3)").advance === p("12.3-1.2"))
 	}
+	it should "シンプルなパターンのマイナスの場合" in {
+		assert(p("-123.4(34)-(-1.2(34))").advance === p("-123.4-(-1.2)") )
+	}
 	// +|-で循環部分が微妙に違うパターンもつける
 	"+-*/" should "循環小数を直す式に直す" in {
 		assert(p("1.2(3)+3").advance === p("(12.3(3)-1.2(3))/9+3"))
 		assert(p("12.(34)-1").advance === p("(1234.(34)-12.(34))/99-1"))
 		assert(p("1.2(3)*2").advance === p("(12.3(3)-1.2(3))/9*2"))
 		assert(p("1.2(3)/2").advance === p("(12.3(3)-1.2(3))/9/2"))
+	}
+	it should "マイナスの場合" in {
+		assert(p("-1.2(34)+1").advance === p("(-123.4(34)-(-1.2(34)))/99+1"))
 	}
 }
