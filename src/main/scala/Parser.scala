@@ -18,7 +18,7 @@ object Parse extends RegexParsers {
 		"-" ^^ {op => (l, r) => Sub(l, r)}
 	)
 	private def exprMulDiv: Parser[Base] = chainl1(
-		number ||| parenthesis,
+		parenthesis ||| number ||| specialLiteral,
 		"*" ^^ {op => (l, r) => Mul(l, r)} |||
 		"/" ^^ {op => (l, r) => Div(l, r)}
 	)
@@ -33,4 +33,6 @@ object Parse extends RegexParsers {
 			RecurringDecimal(Decimal(Int(BigInt(di + dd)), Int(-(dd.length))), Int(BigInt(r)))}
 	
 	private def signedIntegerLiteral: Parser[String] = "(\\+|-)?([1-9][0-9]*|0)".r ^^ identity
+	
+	private def specialLiteral: Parser[Base] = "Inf" ^^ ((a) => {Inf()})
 }
