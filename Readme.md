@@ -4,6 +4,14 @@ myscalc
 
 途中式を表示するやつ。
 
+使い方
+---
+1. [ダウンロード](https://github.com/soukouki/myscalc/releases/latest/)
+2. 実行
+	- `./myscalc.cmd`を使う
+		- javaコマンドを使います
+	- `java -jar (展開したフォルダ)/myscalc.jar`を実行
+
 使える式
 ---
 
@@ -23,7 +31,7 @@ myscalc
 - `1.2(34)` 循環小数
 	- 例は`1.2343434...`と同じ
 - 特殊なリテラル
-	- 変更される恐れが高い
+	- 非推奨
 	- `Inf`
 
 バグ
