@@ -32,6 +32,7 @@ class InfSpec extends FlatCalcTest {
 		assert(p("Inf-2").advance === Inf())
 		assert(p("Inf*2").advance === Inf())
 		assert(p("Inf/2").advance === Inf())
+		assert(p("Inf/Inf").advance === p("Inf"))
 	}
 }
 

@@ -85,6 +85,9 @@ class DivSpec extends FlatCalcTest {
 	it should "1で割った場合、割られたほうを返す" in {
 		assert(p("1.1/1").advance === p("1.1"))
 	}
+	it should "割る数と割られる数が同じ場合、1を返す" in {
+		assert(p("1.1/1.1").advance === p("1"))
+	}
 	"string" should "式の間に/をつけて返す" in {
 		assert(Div(Int(1), Int(2)).string === "1/2")
 		assert(Div(Div(Int(1), Int(2)), Int(3)).string === "1/2/3")

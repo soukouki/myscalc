@@ -122,6 +122,7 @@ case class Div(left: Base, right: Base) extends Operator with MulDivOperator {
 		val zero: BigInt = 0 // 変数に一回入れないとできないっぽい
 		(left, right) match {
 			case (Inf(), _) | (_, Inf()) | (_, Int(`zero`)) => Inf()
+			case (l, r) if l == r => Int(1)
 			case (l, Int(n)) if n == 1 => l
 			case (l: Int, r: Int) if l divisible r => l / r
 			case (l: Int, r: Int) => Rational(l, r) // 割り切れないとき
