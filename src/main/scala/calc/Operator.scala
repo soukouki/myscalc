@@ -22,7 +22,7 @@ sealed trait Operator extends Base {
 		(l.hasFinished, r.hasFinished) match {
 			case (false, false) | (false, true) // (1+2)+(3+4) | (1+2)+3
 				=> create(l.advance, r)
-			case (true, false) // 1+2+3
+			case (true, false) // 1+(2+3)
 				=> create(l, r.advance)
 			case (true, true) // 1+2
 				=> (l, r) match {
@@ -36,7 +36,7 @@ object Operator {
 	def unapply(ope: Operator): Option[(Base, Base)] = Option((ope.left, ope.right))
 }
 
-// TODO(v1.3.0) DecimalやRecurringDecimalのcaseがいくつもあるのでPartialFunctionを使ってもう少し簡潔にする
+// TODO DecimalやRecurringDecimalのcaseがいくつもあるのでPartialFunctionを使ってもう少し簡潔にする
 
 /** [[Add]][[Sub]]の主に[[#solve]]をまとめたクラス */
 sealed trait AddSub extends Operator with AddSubOperator {
