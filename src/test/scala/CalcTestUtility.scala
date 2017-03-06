@@ -1,3 +1,5 @@
+import org.scalatest.{FlatSpec, DiagrammedAssertions}
+
 import myscalc.Parse
 import myscalc.calc.Base
 
@@ -7,3 +9,5 @@ trait CalcTestUtility {
 		i(Parse(f).right.get, f)
 	}
 }
+
+trait FlatCalcTest extends FlatSpec with DiagrammedAssertions with CalcTestUtility
