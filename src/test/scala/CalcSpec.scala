@@ -11,7 +11,8 @@ class CalcSpec extends FlatTest {
 	}
 	it should "変数" in {
 		val (ncalc, result) = Calc(defaultVariables).calc("x=12")
-		assert(result === List("x=12"))
+		assert(result === List("x=12", "Undef"))
+		assert(ncalc === Calc(Variables(Map(CharKey('x') -> Int(12)))))
 		assert(ncalc.calc("x") === (Calc(Variables(Map(CharKey('x') -> Int(12)))), List("x", "12")))
 	}
 }
