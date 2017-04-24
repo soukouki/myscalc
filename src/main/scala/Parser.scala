@@ -20,14 +20,12 @@ object Parse extends RegexParsers {
 	private def exprAddSub: Parser[Base] = chainl1(
 		exprMulDiv,
 		"+" ^^ {op => (l, r) => Add(l, r)} |||
-		"-" ^^ {op => (l, r) => Sub(l, r)}
-	)
+		"-" ^^ {op => (l, r) => Sub(l, r)})
 	private def exprMulDiv: Parser[Base] = chainl1(
 		parenthesis ||| number ||| variable ||| specialLiteral,
 		"*" ^^ {op => (l, r) => Mul(l, r)} |||
-		"/" ^^ {op => (l, r) => Div(l, r)}
-	)
-	private def parenthesis: Parser[Base] = "(" ~> nonEqualExpr <~ ")" ^^ identity
+		"/" ^^ {op => (l, r) => Div(l, r)})
+	private def parenthesis: Parser[Base] = "(" ~> exprNonEqual <~ ")" ^^ identity
 	
 	private def number: Parser[Num] = integer ||| decimal ||| recurringDecimal
 	private def integer: Parser[Int] = signedIntegerLiteral ^^ {s => Int(BigInt(s))}

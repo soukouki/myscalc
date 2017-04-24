@@ -37,6 +37,12 @@ class UndefSpec extends FlatCalcTest {
 	"string" should "" in {
 		assert(Undef().string === "Undef")
 	}
+	"#advance" should "numと演算すると必ずUndefになる" in {
+		assert(advance(p("1+Undef")) === Undef())
+		assert(advance(p("1-Undef")) === Undef())
+		assert(advance(p("1*Undef")) === Undef())
+		assert(advance(p("1/Undef")) === Undef())
+	}
 }
 
 class EqualSpec extends FlatCalcTest {
