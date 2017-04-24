@@ -27,19 +27,16 @@ object Parse extends RegexParsers {
 		"*" ^^ {op => (l, r) => Mul(l, r)} |||
 		"/" ^^ {op => (l, r) => Div(l, r)}
 	)
-	private def parenthesis: Parser[Base] = "(" ~> expr <~ ")" ^^ identity
+	private def parenthesis: Parser[Base] = "(" ~> nonEqualExpr <~ ")" ^^ identity
 	
 	private def number: Parser[Num] = integer ||| decimal ||| recurringDecimal
 	private def integer: Parser[Int] = signedIntegerLiteral ^^ {s => Int(BigInt(s))}
 	private def decimal: Parser[Decimal] = signedIntegerLiteral ~ "." ~ "[0-9]+".r ^^
 		{case l ~ "." ~ r => Decimal(Int(BigInt(l + r)), Int(-(r.length)))}
 	private def recurringDecimal: Parser[RecurringDecimal] =
-		signedIntegerLiteral ~ "." ~ "[0-9]*".r ~ "(" ~ "[0-9]+".r ~ ")" ^^	{case di ~ "." ~ dd ~ "(" ~ r ~ ")" =>
+		signedIntegerLiteral ~ "." ~ "[0-9]*".r ~ "(" ~ "[0-9]+".r ~ ")" ^^ {case di ~ "." ~ dd ~ "(" ~ r ~ ")" =>
 			RecurringDecimal(Decimal(Int(BigInt(di + dd)), Int(-(dd.length))), Int(BigInt(r)))}
-	
 	private def signedIntegerLiteral: Parser[String] = "(\\+|-)?([1-9][0-9]*|0)".r ^^ identity
-	
 	private def variable: Parser[Variable] = "[a-z]".r ^^ (key => {Variable(CharKey(key.charAt(0)))})
-		
 	private def specialLiteral: Parser[Base] = "Inf" ^^ (a => Inf()) ||| "Undef" ^^ (a => Undef())
 }

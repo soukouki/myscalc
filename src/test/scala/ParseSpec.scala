@@ -48,8 +48,4 @@ class ParseSpec extends FlatTest {
 		assert(Parse("3.(3)") === Right(RecurringDecimal(Decimal(Int(3), Int(0)), Int(3))))
 		assert(Parse("1.23(45)") === Right(RecurringDecimal(Decimal(Int(123), Int(-2)), Int(45))))
 	}
-	it should "Infリテラル" in {
-		assert(parse("Inf") === Inf())
-		assert(parse("Inf+2") === Add(Inf(), Int(2)))
-	}
 }

@@ -30,6 +30,9 @@ class IntSpec extends FlatCalcTest {
 }
 
 class InfSpec extends FlatCalcTest {
+	"parse" should "Infリテラル" in {
+		assert(p("Inf") === Inf())
+	}
 	"+-*/" should "全てInfを返す" in {
 		assert(advance(p("Inf+2")) === Inf())
 		assert(advance(p("Inf-2")) === Inf())

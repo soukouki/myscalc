@@ -1,7 +1,7 @@
 
 import myscalc.Parse
-import myscalc.calc.error.SubstitutionError
 
+import myscalc.calc.error.SubstitutionError
 import myscalc.calc.num.Int
 import myscalc.calc.Variable
 import myscalc.calc.Equal
@@ -11,8 +11,7 @@ import myscalc.variables.Variables
 import myscalc.variables.CharKey
 
 // 変数関係のテストはとりあえずまとめる
-
-class VariableSpec extends FlatSpec with DiagrammedAssertions with CalcTestUtility {
+class VariableSpec extends FlatCalcTest {
 	"parse" should "とりま初期値" in {
 		assert(p("x") === Variable(CharKey('x')))
 		assert(p("a") === Variable(CharKey('a')))
@@ -31,8 +30,7 @@ class VariableSpec extends FlatSpec with DiagrammedAssertions with CalcTestUtili
 	}
 }
 
-<<<<<<< HEAD
-class UndefSpec extends FlatSpec with DiagrammedAssertions with CalcTestUtility {
+class UndefSpec extends FlatCalcTest {
 	"parse" should "" in {
 		assert(p("Undef") === Undef())
 	}
@@ -41,10 +39,7 @@ class UndefSpec extends FlatSpec with DiagrammedAssertions with CalcTestUtility 
 	}
 }
 
-class EqualSpec extends FlatSpec with DiagrammedAssertions with CalcTestUtility {
-=======
 class EqualSpec extends FlatCalcTest {
->>>>>>> 82d91d6... うみゅー？
 	"parse" should "変数=式だけで" in {
 		assert(p("x=1") === Equal(Variable(CharKey('x')), Int(1)))
 	}
@@ -52,6 +47,7 @@ class EqualSpec extends FlatCalcTest {
 		assert(Parse("1=1").isLeft)
 		assert(Parse("x=y=2").isLeft)
 		assert(Parse("x+2=3").isLeft)
+		assert(Parse("x=(x=3)").isLeft)
 	}
 	"string" should "" in {
 		assert(Equal(Variable(CharKey('a')), Int(4)).string === "a=4")
