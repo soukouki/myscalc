@@ -1,8 +1,13 @@
 
 myscalc
 ===
-
 途中式を表示するやつ。
+
+|||
+|:-:|:-:|
+|master|[![Build Status](https://travis-ci.org/soukouki/myscalc.svg?branch=master)](https://travis-ci.org/soukouki/test)|
+|develop|[![Build Status](https://travis-ci.org/soukouki/myscalc.svg?branch=develop)](https://travis-ci.org/soukouki/test)|
+
 
 使い方
 ---
@@ -43,7 +48,6 @@ myscalc
 ---
 
 - 論理式
-- 分数から小数に変換する構文を実装
 - 計算を省略するオプションを付ける
 	- 例えば、分数の細かい計算は方程式を方程式を解いたりするのには不要
 - `-(2+3)`などの式を動かせるように
@@ -51,7 +55,13 @@ myscalc
 - 循環小数の途中式をもっとよく
 - is-a関係が甘い
 	- advanceが使えるのか使えないのか
-- -vオプション
+- 分数<>小数の変換
+- 変数関連
+	- `2x`とか書けるように
+	- `1+x=4`とかできるように
+	- `xx=3`とかどうするよ・・・
+	- 変数の値を変更したりできるように
+		- 変更できないやつとできるやつをどう分けるか
 
 バージョン情報
 ---
@@ -106,3 +116,6 @@ myscalc
 - v2.0._
 	- v2.0.0
 		- 簡単な変数を実装
+	- v2.0.1
+		- `-v`オプションを追加
+		- 引数を与えても計算しなかったのを修正
