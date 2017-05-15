@@ -16,8 +16,7 @@ object Myscalc {
 		val in = readLine()
 		if(in.charAt(0) == '\u0004') return
 		val (nca, ss) = ca.calc(in)
-		//TODO[リリース前に必ず] 結果表示が`List(1*1/2, 1/2, 1/2)`こんな風になる
-		println(ss)
+		println(ss.distinct.mkString("\n"))
 		loop(nca)
 	}
 	
