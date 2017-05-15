@@ -9,7 +9,7 @@ import myscalc.Calc
 /** myscalcの引数の処理とか */
 object Myscalc {
 	
-	val versionMesseage = "v2.0.0"
+	val versionMesseage = "v2.0.1"
 	
 	def main(args: Array[String]) = {
 		if(args.find(_ == "-h").nonEmpty || args.find(_ == "--help").nonEmpty) println(helpMesseage)
