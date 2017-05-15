@@ -10,11 +10,20 @@ object Myscalc {
 	def main(args: Array[String]) = {
 		if(args.find(_ == "-h").nonEmpty || args.find(_ == "--help").nonEmpty)
 			println(helpMesseage)
-		else loop(Calc(Variables(Map())))
+		else if(args.nonEmpty) {
+			val (_, res) = args.foldLeft((Calc(Variables(Map())), List[String]())){(tup, inF) => {
+				val (ca, res) = tup
+				val (nca, addres) = ca.calc(inF)
+				(nca, res ++ addres)
+			}}
+			println(res.mkString("\n"))
+		}
+		else
+			loop(Calc(Variables(Map())))
 	}
 	private def loop(ca: Calc): Unit = {
 		val in = readLine()
-		if(in.charAt(0) == '\u0004') return
+		if(in.length >= 1 && in.charAt(0) == '\u0004') return
 		val (nca, ss) = ca.calc(in)
 		println(ss.distinct.mkString("\n"))
 		loop(nca)
