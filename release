@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#sbt assembly
+sbt assembly
 
 # tempファイルを作り、そこにファイルを集める
 mkdir release-temp
