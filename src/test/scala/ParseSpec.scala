@@ -1,11 +1,9 @@
-import org.scalatest.{FlatSpec, DiagrammedAssertions}
+
 import myscalc.Parse
 import myscalc.calc.num._
 import myscalc.calc.operator._
 
-class ParseSpec extends FlatSpec with DiagrammedAssertions {
-	def parse(s: String) = Parse(s).right.get
-	
+class ParseSpec extends FlatTest {
 	"apply" should "数字の場合、Intが戻る" in {
 		assert(Parse("3") === Right(Int(3)))
 		assert(Parse("12") === Right(Int(12)))
@@ -49,9 +47,5 @@ class ParseSpec extends FlatSpec with DiagrammedAssertions {
 	it should "循環小数を処理できるか" in {
 		assert(Parse("3.(3)") === Right(RecurringDecimal(Decimal(Int(3), Int(0)), Int(3))))
 		assert(Parse("1.23(45)") === Right(RecurringDecimal(Decimal(Int(123), Int(-2)), Int(45))))
-	}
-	it should "Infリテラル" in {
-		assert(parse("Inf") === Inf())
-		assert(parse("Inf+2") === Add(Inf(), Int(2)))
 	}
 }

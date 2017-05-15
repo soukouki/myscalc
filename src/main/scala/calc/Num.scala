@@ -1,5 +1,7 @@
 package myscalc.calc
 
+import myscalc.variables.Variables
+
 import scala.{Int => ScalaInt}
 import myscalc.calc.operatorbase.MulDivOperator
 
@@ -11,8 +13,8 @@ object Num {
 package num {
 	/**[[#advance]]できない[[Num]]*/
 	sealed trait SimpleNum extends Num {
-		override def hasFinished = true
-		override def advance: Num = sys.error("hasFinishedがfalseなのでadvanceは実行されてはいけない")
+		override def hasFinished(va: Variables) = true
+		override def advance(va: Variables) = sys.error("hasFinishedがfalseなのでadvanceは実行されてはいけない")
 	}
 	
 	case class Int(value: BigInt) extends SimpleNum with Ordered[Int] {
@@ -53,18 +55,18 @@ package num {
 	
 	/** [[operator.Div]]と違い、両方の数がInt型のときの処理をする */
 	case class Rational(numerator: Int, denominator: Int) extends Num with MulDivOperator {
-		override def hasFinished: Boolean =
+		override def hasFinished(va: Variables): Boolean =
 			denominator != Int(1) && denominator != Int(0) && !denominator.isMinus && !canReduce
-		override def advance: Num = {
+		override def advance(va: Variables): (Num, Variables) = {
 			if(denominator == Int(1)) {
-				numerator
+				(numerator, va)
 			} else if(denominator == Int(0)) {
-				Inf()
+				(Inf(), va)
 			} else if (denominator.isMinus) {
-				Rational(-numerator, -denominator)
+				(Rational(-numerator, -denominator), va)
 			} else if(canReduce) {
 				val mcde1, minimumCommonDivisorExcept1 = numerator minimumCommonDivisorExcept1 denominator
-				Rational(numerator / mcde1, denominator / mcde1)
+				(Rational(numerator / mcde1, denominator / mcde1), va)
 			} else sys.error("hasFinishedがfalseなのでadvanceは実行されてはいけない")
 		}
 		override def string: String = stringBase(numerator, "/", denominator)
@@ -100,8 +102,8 @@ package num {
 	case class RecurringDecimal(decimal: Decimal, recurring: Int) extends Num {
 		if(recurring.isMinus) sys.error("recurringが負の数になっている")
 		
-		override def advance: myscalc.calc.Base = decimal
-		override def hasFinished = recurring != Int(0)
+		override def advance(va: Variables): (Base, Variables) = (decimal, va)
+		override def hasFinished(va: Variables) = recurring != Int(0)
 		override def string: String = s"${decimal.string(appendDotAlways = true)}(${recurring.string})"
 		
 		private[calc] def toFormula: Base = {

@@ -1,11 +1,12 @@
 package myscalc.calc.operator
 
+import myscalc.variables.Variables
 import myscalc.calc._
 import myscalc.calc.operatorbase._
 import myscalc.calc.num._
 
 sealed trait Operator extends Base {
-	override def hasFinished = false
+	override def hasFinished(va: Variables) = false
 	def left: Base
 	def right: Base
 	def solve(l: Num,r: Num): Base
@@ -16,18 +17,24 @@ sealed trait Operator extends Base {
 		@param create コンストラクタを設定
 	*/
 	protected def advanceBase(
-			l: Base, r: Base,
+			l: Base, r: Base, va: Variables,
 			create: (Base, Base) => Operator
-		): Base = {
-		(l.hasFinished, r.hasFinished) match {
+		): (Base, Variables) = {
+		(l.hasFinished(va), r.hasFinished(va)) match {
 			case (false, false) | (false, true) // (1+2)+(3+4) | (1+2)+3
-				=> create(l.advance, r)
+				=> {
+					val (nl, _) = l.advance(va)
+					(create(nl, r), va)
+				}
 			case (true, false) // 1+(2+3)
-				=> create(l, r.advance)
+				=> {
+					val (nr, _) = r.advance(va)
+					(create(l, nr), va)
+				}
 			case (true, true) // 1+2
 				=> (l, r) match {
-					case (nl: Num, nr: Num) // trueなのはNumだけ(コンパイルエラー出せないのでwarningのまま)
-						=> solve(nl, nr)
+					case (nl: Num, nr: Num) => (solve(nl, nr), va)
+					case (Undef(), _) | (_, Undef()) => (Undef(), va)
 				}
 		}
 	}
@@ -76,13 +83,13 @@ sealed trait AddSub extends Operator with AddSubOperator {
 }
 
 case class Add(left: Base, right: Base) extends AddSub {
-	override def advance: Base = advanceBase(left, right, Add(_, _))
+	override def advance(va: Variables): (Base, Variables) = advanceBase(left, right, va, Add(_, _))
 	override def string: String = stringBase(left, "+", right)
 	override def solve(l: Num, r: Num) = addSolve(l, r, Add(_, _), _ + _)
 }
 
 case class Sub(left: Base, right: Base) extends AddSub {
-	override def advance: Base = advanceBase(left, right, Sub(_, _))
+	override def advance(va: Variables): (Base, Variables) = advanceBase(left, right, va, Sub(_, _))
 	override def string: String = stringBase(left, "-", right)
 	override def solve(left: Num, right: Num) = (left, right) match {
 		// シンプルな場合
@@ -92,7 +99,7 @@ case class Sub(left: Base, right: Base) extends AddSub {
 }
 
 case class Mul(left: Base, right: Base) extends Operator with MulDivOperator {
-	override def advance: Base = advanceBase(left, right, Mul(_, _))
+	override def advance(va: Variables): (Base, Variables) = advanceBase(left, right, va, Mul(_, _))
 	override def string: String = stringBase(left, "*", right)
 	override def solve(l: Num, r: Num) = (left, right) match {
 		case (Inf(), _) | (_, Inf()) => Inf()
@@ -116,7 +123,7 @@ case class Mul(left: Base, right: Base) extends Operator with MulDivOperator {
 }
 
 case class Div(left: Base, right: Base) extends Operator with MulDivOperator {
-	override def advance: Base = advanceBase(left, right, Div(_, _))
+	override def advance(va: Variables): (Base, Variables) = advanceBase(left, right, va, Div(_, _))
 	override def string: String = stringBase(left, "/", right)
 	override def solve(l: Num, r: Num) = {
 		val zero: BigInt = 0 // 変数に一回入れないとできないっぽい
