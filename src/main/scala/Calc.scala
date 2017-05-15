@@ -25,7 +25,7 @@ object Myscalc {
 		val in = readLine()
 		if(in.length >= 1 && in.charAt(0) == '\u0004') return
 		val (nca, ss) = ca.calc(in)
-		println(ss.distinct.mkString("\n"))
+		println(ss.mkString("\n"))
 		loop(nca)
 	}
 	
@@ -49,7 +49,7 @@ case class Calc(va: Variables) {
 			case Left(msg) => (this, List(msg))
 			case Right(tree) => {
 				val (lastVa, ss) = calci(tree, va, List())
-				(Calc(lastVa), ss.reverse)
+				(Calc(lastVa), ss.reverse.distinct)
 			}
 		}
 	}
