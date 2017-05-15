@@ -10,14 +10,14 @@ object Myscalc {
 	def main(args: Array[String]) = {
 		if(args.find(_ == "-h").nonEmpty || args.find(_ == "--help").nonEmpty)
 			println(helpMesseage)
-		else loop(Variables(Map()))
+		else loop(Calc(Variables(Map())))
 	}
-	private def loop(va: Variables): Unit = {
+	private def loop(ca: Calc): Unit = {
 		val in = readLine()
 		if(in.charAt(0) == '\u0004') return
-		val (nva, ss) = Calc(va).calc(in)
-		println(ss)
-		loop(va)
+		val (nca, ss) = ca.calc(in)
+		println(ss.distinct.mkString("\n"))
+		loop(nca)
 	}
 	
 	val helpMesseage: String = """
@@ -49,7 +49,7 @@ case class Calc(va: Variables) {
 			case true => (va, tree.string :: ss)
 			case false => {
 				val (ntree, nva) = tree.advance(va)
-				calci(ntree, va, tree.string :: ss)
+				calci(ntree, nva, tree.string :: ss)
 			}
 		}
 	}

@@ -15,6 +15,6 @@ case class Equal(left: Variable, right: Base) extends Base {
 		else {
 			(Undef(), va.substitution(left.key, right))
 		}
-	override def hasFinished(va: Variables) = true
+	override def hasFinished(va: Variables) = false
 	override def string = s"${left.string}=${right.string}"
 }
