@@ -16,10 +16,10 @@ class VariableSpec extends FlatCalcTest {
 		assert(p("x") === Variable(CharKey('x')))
 		assert(p("a") === Variable(CharKey('a')))
 	}
-	"hasFinished" should "Variablesにあるときはtrue" in {
+	"hasFinished" should "Variablesにあるときはfalse" in {
 		assert(p("x").hasFinished(Variables(Map(CharKey('x') -> Int(0)))) === false)
 	}
-	it should "Variablesにないときはfalse" in {
+	it should "ないときはtrue" in {
 		assert(p("x").hasFinished(defaultVariables) === true)
 	}
 	"string" should "keyだけ" in {
