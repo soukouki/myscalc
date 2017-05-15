@@ -1,5 +1,5 @@
 
-myscalc
+myscalc [![Build Status](https://travis-ci.org/soukouki/myscalc.svg?branch=master)](https://travis-ci.org/soukouki/test)
 ===
 
 途中式を表示するやつ。
