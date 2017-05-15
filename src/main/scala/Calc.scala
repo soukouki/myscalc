@@ -8,18 +8,18 @@ import myscalc.variables.Variables
 /** myscalcの引数の処理とか */
 object Myscalc {
 	def main(args: Array[String]) = {
-		if(args.find(_ == "-h").nonEmpty || args.find(_ == "--help").nonEmpty)
-			println(helpMesseage)
-		else if(args.nonEmpty) {
-			val (_, res) = args.foldLeft((Calc(Variables(Map())), List[String]())){(tup, inF) => {
-				val (ca, res) = tup
-				val (nca, addres) = ca.calc(inF)
-				(nca, res ++ addres)
-			}}
-			println(res.mkString("\n"))
-		}
-		else
-			loop(Calc(Variables(Map())))
+		if(args.find(_ == "-h").nonEmpty || args.find(_ == "--help").nonEmpty) println(helpMesseage)
+		else if (args.find(_ == "-v").nonEmpty || args.find(_ == "--version").nonEmpty) println(versionMesseage)
+		else if(args.nonEmpty) println(calcArgs(args))
+		else loop(Calc(Variables(Map())))
+	}
+	private def calcArgs(args: Seq[String]): String = {
+		val (_, res) = args.foldLeft((Calc(Variables(Map())), List[String]())){(tup, inF) => {
+			val (ca, res) = tup
+			val (nca, addres) = ca.calc(inF)
+			(nca, res ++ addres)
+		}}
+		res.mkString("\n")
 	}
 	private def loop(ca: Calc): Unit = {
 		val in = readLine()
@@ -40,6 +40,7 @@ myscalc help message
 	引数がないとこれになります。
 	ctrl+d で終了します。
 """
+	val versionMesseage = "v2.0.0"
 }
 
 /** [[myscalc.calc]]の処理を汎用化したもの */
