@@ -1,8 +1,13 @@
 
-myscalc [![Build Status](https://travis-ci.org/soukouki/myscalc.svg?branch=master)](https://travis-ci.org/soukouki/test)
+myscalc
 ===
-
 途中式を表示するやつ。
+
+|||
+|:-:|:-:|
+|master|[![Build Status](https://travis-ci.org/soukouki/myscalc.svg?branch=master)](https://travis-ci.org/soukouki/test)|
+|develop|[![Build Status](https://travis-ci.org/soukouki/myscalc.svg?branch=develop)](https://travis-ci.org/soukouki/test)|
+
 
 使い方
 ---
