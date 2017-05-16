@@ -1,4 +1,5 @@
 #!/bin/bash
+set -eu
 
 sbt assembly
 
@@ -7,20 +8,25 @@ mkdir release-temp
 cd release-temp
 cp "$(find "../target" -type f -name "myscalc.jar")" ../myscalc.cmd ../Readme.md ../License .
 
-myscalc_version=$(java -jar myscalc.jar -v)
+# 実行ファイル側のバージョン取り出し
+myscalc_version="$(
+	int="[1-9][0-9]*"
+	java -jar myscalc.jar -v | grep -oP "(?<=myscalc )v[-+.0-9a-zA-Z]+"
+)"
 
-zip -r ../myscalc_$myscalc_version.zip .
+# zipファイルの作成
+zip -r "../myscalc_$myscalc_version.zip" .
 
 # git tagの最新バージョンとmyscalcのバージョンが違うときに警告を出す(myscalcのバージョンを上げ忘れたときのため)
 git_latest_version=$(git tag -l | tail -n1)
-if [ $myscalc_version = $git_latest_version ]; then
+if [ "$myscalc_version" = "$git_latest_version" ]; then
 	echo "gitのtagの最新バージョンとmyscalc --versionは同じです"
 else
 	echo -e "\033[37m\033[41m"
 	echo "注意"
 	echo "gitのtagの最新バージョンとmyscalc --versionが違っています！"
 	echo ""
-	echo "git tag:"$git_latest_version", myscalc ver:"$myscalc_version
+	echo "git tag:$git_latest_version, myscalc ver:$myscalc_version"
 	echo -e "\033[39m\033[49m"
 fi
 
