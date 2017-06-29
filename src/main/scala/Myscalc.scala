@@ -3,13 +3,12 @@ package myscalc
 import scala.io.StdIn._
 
 import myscalc.variables.Variables
-import myscalc.Calc
 
 
 /** myscalcの引数の処理とか */
 object Myscalc {
 	
-	val versionMesseage = "v2.0.1"
+	val version = "v2.0.2"
 	
 	def main(args: Array[String]) = {
 		if(args.find(_ == "-h").nonEmpty || args.find(_ == "--help").nonEmpty) println(helpMesseage)
@@ -26,11 +25,12 @@ object Myscalc {
 		res.mkString("\n")
 	}
 	private def loop(ca: Calc): Unit = {
-		val in = readLine()
-		if(in.length >= 1 && in.charAt(0) == '\u0004') return
-		val (nca, ss) = ca.calc(in)
-		println(ss.mkString("\n"))
-		loop(nca)
+		Option(readLine()).foreach{s =>
+			if(s.length >= 1 && s.charAt(0) == '\u0004') return
+			val (nca, ss) = ca.calc(s)
+			println(ss.mkString("\n"))
+			loop(nca)
+		}
 	}
 	
 	val helpMesseage: String = """
@@ -44,4 +44,5 @@ myscalc help message
 	引数がないとこれになります。
 	ctrl+d で終了します。
 """
+	val versionMesseage = "myscalc " + version
 }

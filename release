@@ -1,28 +1,43 @@
-#!/bin/bash
+﻿#!/bin/bash
+set -eu
+
+regexp_semantic_version="v[1-9][-+.0-9a-zA-Z]+"
+function warning_puts() {
+	echo -e "\033[37m\033[41m"
+	echo "注意"
+	echo "$1"
+	echo -e "\033[39m\033[49m"
+}
 
 sbt assembly
 
 # tempファイルを作り、そこにファイルを集める
-mkdir release-temp
+mkdir release-temp | true
 cd release-temp
 cp "$(find "../target" -type f -name "myscalc.jar")" ../myscalc.cmd ../Readme.md ../License .
 
-myscalc_version=$(java -jar myscalc.jar -v)
+# 実行ファイル側のバージョン取り出し
+myscalc_version=$(java -jar myscalc.jar -v | grep -oP "(?<=myscalc )$regexp_semantic_version")
 
-zip -r ../myscalc_$myscalc_version.zip .
+# zipファイルの作成
+zip -r "../myscalc_$myscalc_version.zip" .
 
-# git tagの最新バージョンとmyscalcのバージョンが違うときに警告を出す(myscalcのバージョンを上げ忘れたときのため)
-git_latest_version=$(git tag -l | tail -n1)
-if [ $myscalc_version = $git_latest_version ]; then
-	echo "gitのtagの最新バージョンとmyscalc --versionは同じです"
-else
-	echo -e "\033[37m\033[41m"
-	echo "注意"
-	echo "gitのtagの最新バージョンとmyscalc --versionが違っています！"
-	echo ""
-	echo "git tag:"$git_latest_version", myscalc ver:"$myscalc_version
-	echo -e "\033[39m\033[49m"
-fi
+# バージョン等の確認
+(a(){
+	if [ "$myscalc_version" = "$1" ]; then
+		echo "$2とmyscalc --versionは同じです"
+	else
+		warning_puts "$2とmyscalc --versionが違っています！
+	
+	$3 ver:$1, myscalc ver:$myscalc_version"
+	fi
+}
+a $(git tag -l | tail -n1) "gitのtagの最新バージョン" "git tag"
+a $(git log --format=%s -1 | grep -oP "$regexp_semantic_version" || echo "versionなし") "gitのコミットメッセージのバージョン" "commit msg"
+readme_ver=$(cat "Readme.md" | grep -oP "	- $regexp_semantic_version" | tail -n 1 | grep -oP "$regexp_semantic_version")
+a $readme_ver "readmeの更新履歴の最新バージョン" "readme"
+)
+
 
 # 後始末
 cd ..
