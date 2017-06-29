@@ -8,7 +8,7 @@ import myscalc.variables.Variables
 /** myscalcの引数の処理とか */
 object Myscalc {
 	
-	val version = "v2.0.1"
+	val version = "v2.0.2"
 	
 	def main(args: Array[String]) = {
 		if(args.find(_ == "-h").nonEmpty || args.find(_ == "--help").nonEmpty) println(helpMesseage)
