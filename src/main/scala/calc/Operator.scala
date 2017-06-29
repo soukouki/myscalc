@@ -35,6 +35,7 @@ sealed trait Operator extends Base {
 				=> (l, r) match {
 					case (nl: Num, nr: Num) => (solve(nl, nr), va)
 					case (Undef(), _) | (_, Undef()) => (Undef(), va)
+					case (Variable(_), _) | (_, Variable(_)) => (Undef(), va) // 変数が設定されていなかったときはここを通る
 				}
 		}
 	}
@@ -92,7 +93,7 @@ case class Sub(left: Base, right: Base) extends AddSub {
 	override def advance(va: Variables): (Base, Variables) = advanceBase(left, right, va, Sub(_, _))
 	override def string: String = stringBase(left, "-", right)
 	override def solve(left: Num, right: Num) = (left, right) match {
-		// シンプルな場合
+		// 小数部分の桁が同じで循環部分も同じ場合は、減法の場合だけ直接計算できるため。
 		case (RecurringDecimal(ld, lr), RecurringDecimal(rd, rr)) if lr == rr && ld.ex == rd.ex => Sub(ld, rd)
 		case (l, r) => {addSolve(l, r, Sub(_, _), _ - _)}
 	}

@@ -4,10 +4,19 @@ import myscalc.variables.Variables
 import myscalc.calc.num._
 import myscalc.calc.operator._
 
+import myscalc.calc.Undef
+import myscalc.calc.Variable
+import myscalc.variables.CharKey
+
 /** [[operator]]共通のテスト */
 class OperatorSpec extends FlatCalcTest {
 	"advance" should "hasFinishedのやつだけになってから処理を始める" in {
 		assert(advance(Add(Rational(Int(5), Int(10)), Int(1))) === Add(Rational(Int(1), Int(2)), Int(1)))
+	}
+	it should "値が設定されていなかったVariableのときは、Undefを返しておく" in {
+		assert(advance(Add(Variable(CharKey('a')), Int(1))) === Undef()) //眠気でバグ鳥無理
+		assert(advance(Add(Int(1), Variable(CharKey('a')))) === Undef())
+		assert(advance(Add(Variable(CharKey('a')), Variable(CharKey('a')))) === Undef())
 	}
 }
 
