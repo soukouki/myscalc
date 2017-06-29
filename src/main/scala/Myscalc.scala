@@ -25,11 +25,12 @@ object Myscalc {
 		res.mkString("\n")
 	}
 	private def loop(ca: Calc): Unit = {
-		val in = readLine()
-		if(in.length >= 1 && in.charAt(0) == '\u0004') return
-		val (nca, ss) = ca.calc(in)
-		println(ss.mkString("\n"))
-		loop(nca)
+		Option(readLine()).foreach{s =>
+			if(s.length >= 1 && s.charAt(0) == '\u0004') return
+			val (nca, ss) = ca.calc(s)
+			println(ss.mkString("\n"))
+			loop(nca)
+		}
 	}
 	
 	val helpMesseage: String = """
