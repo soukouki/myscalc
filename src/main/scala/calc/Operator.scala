@@ -7,6 +7,11 @@ import myscalc.calc.num._
 
 sealed trait Operator extends Base {
 	override def hasFinished(va: Variables) = false
+}
+
+// TODO DecimalやRecurringDecimalのcaseがいくつもあるのでPartialFunctionを使ってもう少し簡潔にする
+
+sealed trait DoubleOperator extends Operator {
 	def left: Base
 	def right: Base
 	def solve(l: Num,r: Num): Base
@@ -40,14 +45,9 @@ sealed trait Operator extends Base {
 		}
 	}
 }
-object Operator {
-	def unapply(ope: Operator): Option[(Base, Base)] = Option((ope.left, ope.right))
-}
-
-// TODO DecimalやRecurringDecimalのcaseがいくつもあるのでPartialFunctionを使ってもう少し簡潔にする
 
 /** [[Add]][[Sub]]の主に[[#solve]]をまとめたクラス */
-sealed trait AddSub extends Operator with AddSubOperator {
+sealed trait AddSub extends DoubleOperator with AddSubOperator {
 	/**
 		[[Add]]と[[Sub]]の[[#solve]]をまとめたもの
 		
@@ -99,7 +99,7 @@ case class Sub(left: Base, right: Base) extends AddSub {
 	}
 }
 
-case class Mul(left: Base, right: Base) extends Operator with MulDivOperator {
+case class Mul(left: Base, right: Base) extends DoubleOperator with MulDivOperator {
 	override def advance(va: Variables): (Base, Variables) = advanceBase(left, right, va, Mul(_, _))
 	override def string: String = stringBase(left, "*", right)
 	override def solve(l: Num, r: Num) = (left, right) match {
@@ -123,7 +123,7 @@ case class Mul(left: Base, right: Base) extends Operator with MulDivOperator {
 	}
 }
 
-case class Div(left: Base, right: Base) extends Operator with MulDivOperator {
+case class Div(left: Base, right: Base) extends DoubleOperator with MulDivOperator {
 	override def advance(va: Variables): (Base, Variables) = advanceBase(left, right, va, Div(_, _))
 	override def string: String = stringBase(left, "/", right)
 	override def solve(l: Num, r: Num) = {
@@ -145,4 +145,26 @@ case class Div(left: Base, right: Base) extends Operator with MulDivOperator {
 			case (l, r: RecurringDecimal) => Div(l, r.toFormula)
 		}
 	}
+}
+
+case class Minus(value: Base) extends Operator {
+	override def advance(va: Variables): (Base, Variables) =
+		value.hasFinished(va) match {
+			case false => {
+				val (new_value, _) = value.advance(va)
+				(Minus(new_value), va)
+			}
+			case true => {
+				(value match {
+					case Undef() => Undef()
+					case Inf() => Inf()
+					case Variable(_) => Undef()
+					case Int(i) => Int(-i)
+					case Rational(n, d) => Rational(-n, d)
+					case Decimal(si, ex) => Decimal(-si, ex)
+					case RecurringDecimal(Decimal(si, ex), rc) => RecurringDecimal(Decimal(-si, ex), rc)
+				}, va)
+			}
+		}
+	override def string: String = s"-(${value.string})"
 }
