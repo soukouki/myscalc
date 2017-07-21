@@ -17,12 +17,6 @@ private[calc] trait AddSubOperator {
 	
 	private def putParenthesesString(l: Base, s: String, r: Base): String = s"${l.string}$s(${r.string})"
 }
-private[calc] object AddSubOperator {
-	def unapply(ope: AddSubOperator): Option[(Base, Base)] = {
-		val Operator(l, r) = ope
-		Option((l, r))
-	}
-}
 
 /** [[Add]][[Sub]]よりも優先順位が高い演算子のtrait */
 private[calc] trait MulDivOperator {
@@ -33,11 +27,5 @@ private[calc] trait MulDivOperator {
 	private def putParentheses(b: Base): String = b match {
 		case _: AddSubOperator => s"(${b.string})"
 		case _ => b.string
-	}
-}
-private[calc] object MulDivOperator {
-	def unapply(ope: MulDivOperator): Option[(Base, Base)] = {
-		val Operator(l, r) = ope
-		Option((l, r))
 	}
 }

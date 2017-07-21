@@ -104,3 +104,40 @@ class DivSpec extends FlatCalcTest {
 		assert(Div(Div(Int(1), Int(2)), Int(3)).string === "1/2/3")
 	}
 }
+
+class MinusSpec extends FlatCalcTest {
+	"advance" should "もっと計算できる場合"
+	it should "整数" in {
+		assert(advance(p("-(2)")) === p("-2"))
+		assert(advance(p("-(-2)")) === p("2"))
+	}
+	it should "分数" in {
+		assert(advance(p("-(1/2)")) === p("-1/2"))
+		assert(advance(p("-(-1/2)")) === p("1/2"))
+	}
+	it should "小数" in {
+		assert(advance(p("-(1.2)")) === p("-1.2"))
+		assert(advance(p("-(-3.31)")) === p("3.31"))
+	}
+	it should "循環小数" in {
+		assert(advance(p("-(1.(2))")) === p("-1.(2)"))
+		assert(advance(p("-(-3.23(1))")) === p("3.23(1)"))
+	}
+	it should "Operator" in {
+		assert(advance(p("-(2*3)")) === p("-(6)"))
+		assert(advance(p("-(-(3))")) === p("-(-3)"))
+	}
+	it should "その他" in {
+		assert(advance(p("-(Undef)")) === p("Undef"))
+		assert(advance(p("-(Inf)")) === p("Inf"))
+		assert(advance(p("-(a)")) === p("Undef"))
+	}
+	"string" should "" in {
+		assert(Minus(Int(3)).string === "-(3)")
+		assert(Minus(Mul(Int(2), Int(3))).string === "-(2*3)")
+	}
+	"parse" should "マイナス" in {
+		assert(p("-(12)") === Minus(Int(12)))
+		assert(p("-(2*3)") === Minus(Mul(Int(2), Int(3))))
+	}
+}
