@@ -36,13 +36,14 @@ object Myscalc {
 	val helpMesseage: String = """
 myscalc help message
 
--h | --help  ヘルプメッセージを表示
+-h | --help	| ヘルプメッセージを表示
+-v | --version	| バージョンメッセージを表示
 
-その他の引数は実行され、終了します。
+その他の引数はその値で計算され、終了します。
 
 インタプリタモード
 	引数がないとこれになります。
-	ctrl+d で終了します。
+	ctrl+d を実行すると終了します。
 """
 	val versionMesseage = "myscalc " + version
 }
